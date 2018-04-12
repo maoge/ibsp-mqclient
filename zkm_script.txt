@@ -1,0 +1,49 @@
+
+/* 以上内容是classpath，由ant脚本自动生成 */
+     -"*/a*.jar"
+     -"*/b*.jar"
+     -"*/c*.jar"
+     -"*/d*.jar"
+     -"*/e*.jar"
+     -"*/f*.jar"
+     -"*/h*.jar"
+     -"*/i*.jar"
+     -"*/j*.jar"
+     -"*/k*.jar"
+     -"*/l*.jar"
+     -"*/m*.jar"
+     -"*/n*.jar"
+     -"*/o*.jar"
+     -"*/p*.jar"
+     -"*/q*.jar"
+     -"*/r*.jar"
+     -"*/s*.jar"
+     -"*/t*.jar"
+     -"*/u*.jar"
+     -"*/v*.jar"
+     -"*/w*.jar"
+     -"*/x*.jar"
+     -"*/y*.jar"
+     -"*/z*.jar"
+     ; 
+
+trimExclude
+	com.ffcs.mq.client.api.* and
+	*.* *(*) and
+	*.* *;
+ 
+trim;
+
+exclude
+	com.ffcs.mq.client.api. and
+	com.ffcs.mq.client.api.* and
+	*.* public *(*);
+
+obfuscate changeLogFileOut=""                 //Write to change log file ChangeLog.txt
+          obfuscateFlow=light                 //Light control flow obfuscation
+          encryptStringLiterals=flowObfuscate //Encrypt String literals using a flow obfuscated decrypt method
+          newNamesPrefix="Z";                 //Prepend "Z" to every new obfuscated name
+
+saveAll "build\out";
+
+gc;           

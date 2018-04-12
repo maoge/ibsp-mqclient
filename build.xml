@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="output" basedir=".">
+	<tstamp>
+	</tstamp>
+	<property file="build.properties" />
+	<property file="version.properties" />
+	<property environment="env" />
+	<property name="jdk.home" value="D:/java/jdk1.7.0_67" />
+	<property name="compile.level" value="1.7" />
+	<property name="src.dir" value="${basedir}/src/main/java" />
+	<property name="resource.dir" value="${basedir}/src/resources" />
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="build.out.dir" value="${basedir}/build/out" />
+	<property name="output.dir" value="${basedir}/output" />
+	<property name="jar.name" value="${projectname}-${version}.jar" />
+	<property name="jar_obfuscated.name" value="${projectname}-obfuscated-${version}.jar" />
+	<property name="zkm.dir" value="${basedir}/tools" />
+	<property name="zkm.script" value="${build.dir}/zkm_script.txt" />
+
+	<target name="output">
+		<antcall target="clean" />
+		<antcall target="init" />
+		<antcall target="build" />
+		<antcall target="jar" />
+		<antcall target="zkm" />
+	</target>
+
+	<path id="project.classpath">
+		<fileset file="${basedir}/lib/*.jar" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${output.dir}" />
+	</target>
+
+	<target name="init">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.out.dir}" />
+		<mkdir dir="${output.dir}" />
+	</target>
+
+	<target name="build">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="on" includeantruntime="on">
+			<compilerarg line="-source ${compile.level} -target ${compile.level} -encoding UTF-8"/>
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="build">		
+		
+		<jar jarfile="${output.dir}/${jar.name}">
+			<fileset dir="${build.dir}">
+				<include name="*"/>
+				<include name="com/ffcs/mq/**"/>
+			</fileset>
+			
+			<manifest>
+				<attribute name="Main-Class" value="" />
+			</manifest>
+		</jar>
+		
+		<jar jarfile="${output.dir}/test.jar">
+			<fileset dir="${build.dir}">
+				<include name="*"/>
+				<include name="test/*"/>
+			</fileset>
+			
+			<manifest>
+				<attribute name="Main-Class" value="" />
+			</manifest>
+		</jar>
+		
+		<copy todir="${build.out.dir}">
+			<fileset dir="${output.dir}">
+				<include name="${jar.name}" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="zkm">
+		<echo message="${zkm.dir}" />
+		<!-- 构建zkm脚本 -->
+		<echo file="${zkm.script}" encoding="utf-8">
+			classpath "."
+	                  "${jdk.home}/jre/lib/rt.jar"
+			          "${jdk.home}/jre/lib/jsse.jar"
+			          "${jdk.home}/jre/lib/jce.jar"
+			          "${jdk.home}/jre/lib/charsets.jar"
+			          "${jdk.home}/lib/tools.jar"
+			          "${basedir}/lib/fastjson-1.2.30.jar"
+			          "${basedir}/lib/log4j-1.2.17.jar"
+			          "${basedir}/lib/slf4j-api-1.7.21.jar"
+			          "${basedir}/lib/slf4j-log4j12-1.7.21.jar"
+			          "${basedir}/lib/niosock-1.0.0.jar"
+			          "${basedir}/lib/rabbitmq-client-3.6.2.1.jar"
+			          "${basedir}/lib/zookeeper-3.4.6.jar"
+			          "${basedir}/lib/guava-22.jar"
+			          "${basedir}/lib/curator-client-2.9.1.jar"
+			          "${basedir}/lib/curator-framework-2.9.1.jar"
+			      ;
+			open "${build.out.dir}/${jar.name}"
+		</echo>
+		<concat destfile="${zkm.script}" append="true">
+			<fileset dir="." file="zkm_script.txt"/>
+		</concat>
+		<!-- 构建完成 -->
+		<echo message="${jdk.home}/lib/tools.jar"/>
+		<java jar="${zkm.dir}/ZKM.jar" fork="true">
+			<jvmarg value="-DZKM_SCRIPT_ENCODING=UTF-8"/>
+			<arg line="-l ${build.dir}/zkm.log"/>
+			<arg line="-tl ${build.dir}/zkm_trim.log"/>
+			<arg value="${zkm.script}"/>
+		</java>
+		<move file="${build.out.dir}/${jar.name}" tofile="${build.dir}/${jar_obfuscated.name}"/>
+		<copy todir="${output.dir}">
+			<fileset dir="${build.dir}">
+				<include name="${jar_obfuscated.name}" />
+			</fileset>
+		</copy>
+		<delete dir="${build.dir}"/>
+	</target>
+</project>
