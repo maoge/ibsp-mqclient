@@ -117,6 +117,8 @@ public class CONSTS {
 
 	public static final String HTTP_PROTOCAL = "http";
 	public static final String CONFIGSVR = "configsvr";
+	public static final String METASVR = "metasvr";
+	public static final String MQSVR = "mqsvr";
 
 	public static final String FUN_GETQUEUEBYQNAME = "getQueueByName";
 	public static final String FUN_GETBORKERSBYQNAME = "getBrokersByQName";
@@ -146,6 +148,8 @@ public class CONSTS {
 	public static final String PARAM_LSNRADDR = "LSNR_ADDR";
 	public static final String PARAM_MAGIC_KEY = "MAGIC_KEY";
 
+	public static final String JSON_HEADER_ID = "ID";
+	public static final String JSON_HEADER_NAME = "NAME";
 	public static final String JSON_HEADER_BROKERS = "BROKERS";
 	public static final String JSON_HEADER_BROKERID = "BROKER_ID";
 	public static final String JSON_HEADER_BROKERNAME = "BROKER_NAME";
@@ -173,6 +177,8 @@ public class CONSTS {
 	public static final String JSON_HEADER_SUB_TOPIC = "SUB_TOPIC";
 	public static final String JSON_HEADER_GROUP_ID = "GROUP_ID";
 	public static final String JSON_HEADER_GROUP_NAME = "GROUP_NAME";
+	public static final String JSON_HEADER_SERV_ID = "SERV_ID";
+	public static final String JSON_HEADER_SERV_NAME = "SERV_NAME";
 	public static final String JSON_HEADER_CONSUMER_ID = "CONSUMER_ID";
 	public static final String JSON_HEADER_PERM_QUEUE = "PERM_QUEUE";
 	public static final String JSON_HEADER_SRC_QUEUE = "SRC_QUEUE";
@@ -209,4 +215,7 @@ public class CONSTS {
 	public static final String ERR_NO_QUEUE_LISTENED = "no queue is listened!";
 	public static final String ERR_AUTH_FAIL = "auth fail!";
 
+	public static final String MQ_DEFAULT_USER       = "mq";
+	public static final String MQ_DEFAULT_PWD        = "ibsp_mq@123321";
+	public static final String MQ_DEFAULT_VHOST      = "/";
 }

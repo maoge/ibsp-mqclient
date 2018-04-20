@@ -81,8 +81,8 @@ public class BasicOperation {
 			}
 		}
 		
-		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.CONFIGSVR, CONSTS.FUN_GETQUEUEBYQNAME);
-		String reqParam = String.format("%s=%s&%s=%s", CONSTS.PARAM_QNAME, queueName, CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
+		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.MQSVR, CONSTS.FUN_GETQUEUEBYQNAME);
+		String reqParam = String.format("%s=%s&%s=%s", CONSTS.PARAM_QUEUENAME, queueName, CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
 
 		boolean retPost = HttpUtils.postData(reqUrl, reqParam, sVar);
 		if (retPost) {
@@ -127,8 +127,8 @@ public class BasicOperation {
 			}
 		}
 
-		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.CONFIGSVR, CONSTS.FUN_GETBORKERSBYQNAME);
-		String reqParam = String.format("%s=%s&%s=%s", CONSTS.PARAM_QNAME, queueName, CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
+		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.MQSVR, CONSTS.FUN_GETBORKERSBYQNAME);
+		String reqParam = String.format("%s=%s&%s=%s", CONSTS.PARAM_QUEUENAME, queueName, CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
 
 		boolean retPost = HttpUtils.postData(reqUrl, reqParam, sVar);
 		if (retPost) {
@@ -277,7 +277,7 @@ public class BasicOperation {
 		int ret = CONSTS.REVOKE_NOK;
 
 		String rootUrl = Global.get().getNextUrl();
-		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.CONFIGSVR, CONSTS.FUN_URL_TEST);
+		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.METASVR, CONSTS.FUN_URL_TEST);
 
 		SVarObject sVarInvoke = new SVarObject();
 		boolean retInvoke = HttpUtils.getData(reqUrl, sVarInvoke);
@@ -694,7 +694,7 @@ public class BasicOperation {
 	public static int checkUrl(String url) {
 		int ret = CONSTS.REVOKE_NOK;
 		
-		String reqUrl = String.format("%s/%s/%s", url, CONSTS.CONFIGSVR, CONSTS.FUN_URL_TEST);
+		String reqUrl = String.format("%s/%s/%s", url, CONSTS.METASVR, CONSTS.FUN_URL_TEST);
 		
 		SVarObject sVarInvoke = new SVarObject();
 		boolean retInvoke = HttpUtils.getData(reqUrl, sVarInvoke);

@@ -60,7 +60,9 @@ public class Global {
 		
 		urls         = new RootUrlBean();
 		qos          = SysConfig.get().getMqPrefetchSize();
-		isAuthed     = false;
+//		isAuthed     = false;
+		//TODO 用户名密码认证还没有做
+		isAuthed     = true;
 		magicKey     = "";
 		globalErrObj = new SVarObject();
 		

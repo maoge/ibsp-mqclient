@@ -95,11 +95,8 @@ public class Queue {
 		this.groupName = groupName;
 	}
 
-	public static Queue fromJson(String sJson) {
-		if (StringUtils.isNullOrEmtpy(sJson))
-			return null;
-
-		JSONObject jsonObj = JSON.parseObject(sJson);
+	public static Queue fromJson(JSONObject jsonObj) {
+		
 		if (jsonObj.isEmpty())
 			return null;
 
@@ -109,8 +106,8 @@ public class Queue {
 		boolean durable = ((String) jsonObj.get(CONSTS.JSON_HEADER_IS_DURABLE)).equals(CONSTS.DURABLE);
 		boolean ordered = ((String) jsonObj.get(CONSTS.JSON_HEADER_IS_ORDERED)).equals(CONSTS.ORDERED);
 		boolean deployed = ((String) jsonObj.get(CONSTS.JSON_HEADER_IS_DEPLOY)).equals(CONSTS.DEPLOYED);
-		String groupId = (String) jsonObj.get(CONSTS.JSON_HEADER_GROUP_ID);
-		String groupName = (String) jsonObj.get(CONSTS.JSON_HEADER_GROUP_NAME);
+		String groupId = (String) jsonObj.get(CONSTS.JSON_HEADER_SERV_ID);
+		String groupName = (String) jsonObj.get(CONSTS.JSON_HEADER_SERV_NAME);
 
 		return new Queue(queueId, queueName, queueType, durable, ordered, deployed, groupId, groupName);
 	}

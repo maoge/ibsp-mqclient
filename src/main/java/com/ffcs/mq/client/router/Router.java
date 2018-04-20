@@ -11,7 +11,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ffcs.mq.client.api.MQMessage;
@@ -1245,8 +1244,10 @@ public class Router {
 			result.setErrInfo(Global.get().getLastError());
 			return null;
 		}
-
-		Queue queue = Queue.fromJson(sVar.getVal());
+		
+		JSONObject object = JSONObject.parseObject(sVar.getVal()).
+				getJSONObject(CONSTS.JSON_HEADER_RET_INFO);
+		Queue queue = Queue.fromJson(object);
 		if (queue == null) {
 			result.setOk(false);
 			result.setErrInfo("loadQueueByName json:" + sVar.getVal() + " parse error ......");
@@ -1280,7 +1281,8 @@ public class Router {
 		}
 
 		// do json parse
-		VBrokerGroup vbGroup = parseVBrokerGroupJson(sVar.getVal(), result);
+		JSONObject object = JSONObject.parseObject(sVar.getVal()).getJSONObject(CONSTS.JSON_HEADER_RET_INFO);
+		VBrokerGroup vbGroup = parseVBrokerGroupJson(object, result);
 		if (!result.isOk()) {
 			return null;
 		}
@@ -1288,100 +1290,50 @@ public class Router {
 		return vbGroup;
 	}
 
-	private VBrokerGroup parseVBrokerGroupJson(String sJson, ParseResultBean result) {
-		JSONObject jsonRoot = JSON.parseObject(sJson);
-		if (jsonRoot == null) {
+	private VBrokerGroup parseVBrokerGroupJson(JSONObject vbGroupObj, ParseResultBean result) {
+		
+		if (vbGroupObj == null) {
 			result.setOk(false);
-			result.setErrInfo("loadQueueBrokerRealtion json illagel:" + sJson);
+			result.setErrInfo("loadQueueBrokerRealtion json illegal");
 			return null;
 		}
-
-		JSONArray jsonArr = (JSONArray) jsonRoot.get(CONSTS.JSON_HEADER_BROKERS);
-		if (jsonArr == null) {
-			result.setOk(false);
-			result.setErrInfo("loadQueueBrokerRealtion BROKERS not fund:" + sJson);
-			return null;
-		}
-
-		int size = jsonArr.size();
-		if (size == 0) {
-			result.setOk(false);
-			result.setErrInfo("BROKERS is null json array:" + sJson);
-			return null;
-		}
-
-		Map<String, VBroker> tmpMap = new HashMap<String, VBroker>();
-		String groupId = "", groupName = "";
-
-		for (int i = 0; i < size; i++) {
-			JSONObject subJson = jsonArr.getJSONObject(i);
-
-			if (subJson == null)
-				continue;
-
-			String brokerId = subJson.getString(CONSTS.JSON_HEADER_BROKERID);
-			String brokerName = subJson.getString(CONSTS.JSON_HEADER_BROKERNAME);
-			String vbrokerId = subJson.getString(CONSTS.JSON_HEADER_VBROKERID);
-			String vbrokerName = subJson.getString(CONSTS.JSON_HEADER_VBROKERNAME);
-			String hostName = subJson.getString(CONSTS.JSON_HEADER_HOSTNAME);
-			String ip = subJson.getString(CONSTS.JSON_HEADER_IP);
-			String vip = subJson.getString(CONSTS.JSON_HEADER_VIP);
-
-			String sPort = subJson.getString(CONSTS.JSON_HEADER_PORT);
-			String sMgrPort = subJson.getString(CONSTS.JSON_HEADER_MGRPORT);
-			String mqUser = subJson.getString(CONSTS.JSON_HEADER_USER);
-			String mqPwd = subJson.getString(CONSTS.JSON_HEADER_PASSWORD);
-			String vhost = subJson.getString(CONSTS.JSON_HEADER_VHOST);
-
-			String masterId = subJson.getString(CONSTS.JSON_HEADER_MASTER_ID);
-			String erlCookie = subJson.getString(CONSTS.JSON_HEADER_ERL_COOKIE);
-
-			String sCluster = subJson.getString(CONSTS.JSON_HEADER_CLUSTER);
-			boolean bCluster = sCluster.equals(CONSTS.CLUSTER);
+		try {
+			VBrokerGroup vbGroup = new VBrokerGroup(vbGroupObj.getString(CONSTS.JSON_HEADER_ID), 
+					vbGroupObj.getString(CONSTS.JSON_HEADER_NAME));
+		
+			JSONArray vbrokerList = vbGroupObj.getJSONArray("VBROKERS");
+			for (int i=0; i<vbrokerList.size(); i++) {
+				JSONObject vbrokerObj = vbrokerList.getJSONObject(i);
+				VBroker vbroker = new VBroker(vbrokerObj.getString(CONSTS.JSON_HEADER_ID),
+						vbrokerObj.getString(CONSTS.JSON_HEADER_NAME),
+						vbrokerObj.getString(CONSTS.JSON_HEADER_MASTER_ID),
+						vbrokerObj.getBoolean(CONSTS.JSON_HEADER_WRITABLE));
 			
-			String sWritable = subJson.getString(CONSTS.JSON_HEADER_WRITABLE);
-			boolean bWritable = sWritable.equals(CONSTS.WRITABLE);
-
-			groupId = subJson.getString(CONSTS.JSON_HEADER_GROUP_ID);
-			groupName = subJson.getString(CONSTS.JSON_HEADER_GROUP_NAME);
-
-			if (StringUtils.isNullOrEmtpy(brokerId) || StringUtils.isNullOrEmtpy(brokerName) || StringUtils.isNullOrEmtpy(vbrokerId)
-					|| StringUtils.isNullOrEmtpy(vbrokerName) || StringUtils.isNullOrEmtpy(hostName) || StringUtils.isNullOrEmtpy(ip)
-					|| StringUtils.isNullOrEmtpy(vip) || StringUtils.isNullOrEmtpy(sPort) || StringUtils.isNullOrEmtpy(sMgrPort)
-					|| StringUtils.isNullOrEmtpy(mqUser) || StringUtils.isNullOrEmtpy(mqPwd) || StringUtils.isNullOrEmtpy(vhost)
-					|| StringUtils.isNullOrEmtpy(masterId) || StringUtils.isNullOrEmtpy(erlCookie) || StringUtils.isNullOrEmtpy(sCluster)
-					|| StringUtils.isNullOrEmtpy(groupId) || StringUtils.isNullOrEmtpy(groupName)) {
-				result.setOk(false);
-				result.setErrInfo("data illagel:" + sJson);
-				return null;
+				JSONArray brokerList = vbrokerObj.getJSONArray("BROKERS");
+				for (int j=0; j<brokerList.size(); j++) {
+					JSONObject brokerObj = brokerList.getJSONObject(j);
+					Broker broker = new Broker(brokerObj.getString(CONSTS.JSON_HEADER_ID), 
+							brokerObj.getString(CONSTS.JSON_HEADER_NAME), 
+							brokerObj.getString(CONSTS.JSON_HEADER_IP),
+							Integer.parseInt(brokerObj.getString(CONSTS.JSON_HEADER_PORT)),
+							CONSTS.MQ_DEFAULT_USER,
+							CONSTS.MQ_DEFAULT_PWD,
+							CONSTS.MQ_DEFAULT_VHOST);
+					vbroker.addBroker(broker);
+				}	
+				vbGroup.addToInvalidNodes(vbroker);
 			}
-
-			int port = Integer.valueOf(sPort);
-			int mgrPort = Integer.valueOf(sMgrPort);
-
-			Broker broker = new Broker(brokerId, brokerName, hostName, ip, vip, port, mgrPort, mqUser, mqPwd, vhost, erlCookie, bCluster,
-					vbrokerId, vbrokerName, groupId, groupName);
-
-			if (tmpMap.containsKey(vbrokerId)) {
-				VBroker vbroker = tmpMap.get(vbrokerId);
-				vbroker.addBroker(broker);
-			} else {
-				VBroker vbroker = new VBroker(vbrokerId, vbrokerName, masterId, vip, erlCookie, bCluster, bWritable, groupId, groupName);
-				vbroker.addBroker(broker);
-				tmpMap.put(vbrokerId, vbroker);
-			}
+			
+			result.setOk(true);
+			return vbGroup;
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			result.setOk(false);
+			result.setErrInfo("Parse vbroker group error, "+e.getMessage());
+			return null;
 		}
-
-		result.setOk(true);
-
-		VBrokerGroup vbGroup = new VBrokerGroup(groupId, groupName);
-		Set<Entry<String, VBroker>> entrySet = tmpMap.entrySet();
-		for (Entry<String, VBroker> entry : entrySet) {
-			VBroker vbroker = entry.getValue();
-			vbGroup.addToInvalidNodes(vbroker);
-		}
-
-		return vbGroup;
 	}
 
 	private boolean isQueueListened(String queueName) {

@@ -29,13 +29,7 @@ public class VBroker {
 	private String vbrokerId;
 	private String vbrokerName;
 	private String masterId;      // 主节点的brokerId
-	private String vip;           // 主节点的ip
-	private String erlCookie;     // 集群的cookie
-	private boolean isCluster;
 	private boolean isWritable;
-
-	private String groupId;
-	private String groupName;
 	
 	private int nodeSize;
 
@@ -45,18 +39,11 @@ public class VBroker {
 
 	private IMQNode mqNode;
 
-	public VBroker(String vbrokerId, String vbrokerName, String masterId, String vip, 
-			String erlCookie, boolean isCluster, boolean isWritable, String groupId, String groupName) {
+	public VBroker(String vbrokerId, String vbrokerName, String masterId, boolean isWritable) {
 		this.vbrokerId   = vbrokerId;
 		this.vbrokerName = vbrokerName;
 		this.masterId    = masterId;
-		this.vip         = vip;
-		this.isCluster   = isCluster;
 		this.isWritable  = isWritable;
-		this.erlCookie   = erlCookie;
-
-		this.groupId     = groupId;
-		this.groupName   = groupName;
 
 		staticInfoMap    = new HashMap<String, ClientStatisticInfoBean>();
 
@@ -67,19 +54,18 @@ public class VBroker {
 
 		statInfoStrBuilder = new StringBuilder();
 	}
-	
-	public VBroker(String vbrokerId, String vbrokerName, String masterId,
-			String vip, String erlCookie, boolean isCluster, boolean isWritable,
-			String groupId, String groupName, HashMap<String, QueueDtlBean> lsnrMap) {
+
+	public VBroker(String vbrokerId, String vbrokerName, String masterId, boolean isWritable,
+			HashMap<String, QueueDtlBean> lsnrMap) {
 		
-		this(vbrokerId, vbrokerName, masterId, vip, erlCookie, isCluster, isWritable, groupId, groupName);
+		this(vbrokerId, vbrokerName, masterId, isWritable);
 		
 		String type = SysConfig.get().getMqType();
 		if (type.equals(CONSTS.MQ_TYPE_RABBITMQ)) {
 			mqNode = new RabbitMQNode(lsnrMap, this);
 		}
 	}
-
+	
 	public int connect() {
 		int res = CONSTS.REVOKE_NOK;
 
@@ -358,30 +344,6 @@ public class VBroker {
 	public void setMasterId(String masterId) {
 		this.masterId = masterId;
 	}
-
-	public String getVIP() {
-		return vip;
-	}
-
-	public void setVIP(String vip) {
-		this.vip = vip;
-	}
-
-	public String getErlCookie() {
-		return erlCookie;
-	}
-
-	public void setErlCookie(String erlCookie) {
-		this.erlCookie = erlCookie;
-	}
-
-	public boolean isCluster() {
-		return isCluster;
-	}
-
-	public void setCluster(boolean isCluster) {
-		this.isCluster = isCluster;
-	}
 	
 	public boolean isWritable() {
 		return isWritable;
@@ -389,26 +351,6 @@ public class VBroker {
 
 	public void setWritable(boolean isWritable) {
 		this.isWritable = isWritable;
-	}
-	
-	public String getGroupId() {
-		return groupId;
-	}
-
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
-
-	public String getGroupName() {
-		return groupName;
-	}
-
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
-	}
-
-	public int getBrokerSize() {
-		return brokerIds.size();
 	}
 
 	public Broker getMasterBroker() {
@@ -522,8 +464,7 @@ public class VBroker {
 	@Override
 	public String toString() {
 		return "VBroker [brokerMap=" + brokerMap + ", brokerIds=" + brokerIds + ", vbrokerId=" + vbrokerId + ", vbrokerName=" + vbrokerName
-				+ ", masterId=" + masterId + ", vip=" + vip + ", erlCookie=" + erlCookie + ", isCluster=" + isCluster + ", isWritable=" + isWritable 
-				+ ", groupId=" + groupId + ", groupName=" + groupName + ", mqNode=" + mqNode + "]";
+				+ ", masterId=" + masterId + ", isWritable=" + isWritable + ", mqNode=" + mqNode + "]";
 	}
 
 }

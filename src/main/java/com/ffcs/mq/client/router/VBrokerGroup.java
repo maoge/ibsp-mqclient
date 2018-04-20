@@ -1252,8 +1252,7 @@ public class VBrokerGroup {
 			int port = Integer.valueOf(sPort);
 			int mgrPort = Integer.valueOf(sMgrPort);
 			
-			Broker broker = new Broker(brokerId, brokerName, hostName, ip, vip, port, mgrPort, mqUser, 
-					mqPwd, vhost, erlCookie, bCluster, vbrokerId, vbrokerName, groupId, groupName);
+			Broker broker = new Broker(brokerId, brokerName, ip, port, mqUser, mqPwd, vhost);
 			
 			if (tmpMap.containsKey(vbrokerId)) {
 				VBroker vbroker = tmpMap.get(vbrokerId);
@@ -1262,7 +1261,7 @@ public class VBrokerGroup {
 				HashMap<String, QueueDtlBean> queueDtlMap = new HashMap<String, QueueDtlBean>();
 				cloneQueueDtlMap(queueDtlMap, "");
 				
-				VBroker vbroker = new VBroker(vbrokerId, vbrokerName, masterId, vip, erlCookie, bCluster, bWritable, groupId, groupName, queueDtlMap);
+				VBroker vbroker = new VBroker(vbrokerId, vbrokerName, masterId, bWritable, queueDtlMap);
 				vbroker.addBroker(broker);
 				tmpMap.put(vbrokerId, vbroker);
 			}
