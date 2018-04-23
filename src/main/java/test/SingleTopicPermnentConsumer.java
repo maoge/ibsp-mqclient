@@ -11,6 +11,7 @@ public class SingleTopicPermnentConsumer {
 	public static void main(String[] args) {
 		String confName = "test";
 		String topic = PropertiesUtils.getInstance(confName).get("topicName");
+		String consumerId = PropertiesUtils.getInstance(confName).get("consumerId");
 
 		IMQClient mqClient = new MQClientImpl();
 		mqClient.setAuthInfo("admin", "admin");
@@ -24,9 +25,6 @@ public class SingleTopicPermnentConsumer {
 			System.out.println(err);
 			return;
 		}
-
-		// mqClient.genConsumerId() 获取consumerId
-		String consumerId = "ConId_3UDCKccALY8PMA7x";
 
 		if (mqClient.listenTopicPermnent(topic, consumerId) == CONSTS.REVOKE_OK) {
 			String info = String.format("listen success.");

@@ -377,48 +377,48 @@ public class VBrokerGroup {
 		return res;
 	}
 
-	private int createAndBind(String topic, String realQueueName) {
-		int res = CONSTS.REVOKE_NOK;
-		
-		// move repairdNodes to validNodes
-		doMerge();
-
-		
-		try {
-			lock.lock();
-			boolean allOk = true;
-			Vector<VBroker> succVec = new Vector<VBroker>();
-
-			for (String vbrokerId : validNodes) {
-				VBroker vbroker = vbrokerMap.get(vbrokerId);
-				if (vbroker == null) {
-					logger.error("vbroker data error: VBroker is null, vbrokerId:{}.", vbrokerId);
-					continue;
-				}
-
-				if (vbroker.createAndBind(topic, realQueueName) != CONSTS.REVOKE_OK) {
-					allOk = false;
-					break;
-				} else {
-					succVec.add(vbroker);
-				}
-			}
-
-			if (allOk) {
-				res = CONSTS.REVOKE_OK;
-			} else {
-				for (VBroker vbroker : succVec) {
-					vbroker.unBindAndDelete(topic, realQueueName);
-				}
-			}
-
-			succVec.clear();
-		} finally {
-			lock.unlock();
-		}
-
-		return res;
-	}
+//	private int createAndBind(String topic, String realQueueName) {
+//		int res = CONSTS.REVOKE_NOK;
+//		
+//		// move repairdNodes to validNodes
+//		doMerge();
+//
+//		
+//		try {
+//			lock.lock();
+//			boolean allOk = true;
+//			Vector<VBroker> succVec = new Vector<VBroker>();
+//
+//			for (String vbrokerId : validNodes) {
+//				VBroker vbroker = vbrokerMap.get(vbrokerId);
+//				if (vbroker == null) {
+//					logger.error("vbroker data error: VBroker is null, vbrokerId:{}.", vbrokerId);
+//					continue;
+//				}
+//
+//				if (vbroker.createAndBind(topic, realQueueName) != CONSTS.REVOKE_OK) {
+//					allOk = false;
+//					break;
+//				} else {
+//					succVec.add(vbroker);
+//				}
+//			}
+//
+//			if (allOk) {
+//				res = CONSTS.REVOKE_OK;
+//			} else {
+//				for (VBroker vbroker : succVec) {
+//					vbroker.unBindAndDelete(topic, realQueueName);
+//				}
+//			}
+//
+//			succVec.clear();
+//		} finally {
+//			lock.unlock();
+//		}
+//
+//		return res;
+//	}
 
 	public int unBindAndDelete(String consumerId, String topic, String realQueueName) {
 		int res = CONSTS.REVOKE_NOK;
@@ -465,8 +465,10 @@ public class VBrokerGroup {
 		return res;
 	}
 
-	public int listenTopicPermnent(String topic, String consumerId) {
+	public int listenTopicPermnent(Queue topic, String consumerId) {
 		int res = CONSTS.REVOKE_NOK;
+		String topicId = topic.getQueueId();
+		String topicName = topic.getQueueName();
 
 		// move repairdNodes to validNodes
 		doMerge();
@@ -480,7 +482,6 @@ public class VBrokerGroup {
 		Set<String> listenSuccId = new HashSet<String>();
 
 		String realQueueName = null;
-		boolean needCreate = false;
 		SVarObject sVar1 = new SVarObject(); // REAL_QUEUE
 		SVarObject sVar2 = new SVarObject(); // MAIN_KEY
 		SVarObject sVar3 = new SVarObject(); // SUB_KEY
@@ -488,30 +489,15 @@ public class VBrokerGroup {
 		if (BasicOperation.getPermnentTopic(consumerId, sVar1, sVar2, sVar3, sVar4) == CONSTS.REVOKE_OK) {
 			realQueueName = sVar1.getVal();
 		} else {
-			SVarObject sVarRealQueue = new SVarObject();
-			if (BasicOperation.genPermQueue(sVarRealQueue) == CONSTS.REVOKE_OK) {
-				realQueueName = sVarRealQueue.getVal();
-				needCreate = true;
-			} else {
-				logger.error("call genPermQueue error.");
+			SVarObject sVarPut = new SVarObject();
+			String subKey = topicName;
+			if (BasicOperation.putPermnentTopic(topicId, consumerId, subKey, sVarPut) == CONSTS.REVOKE_NOK) {
+				Global.get().setLastError(sVarPut.getVal());
+				SVarObject sVarDel = new SVarObject();
+				BasicOperation.delPermnentTopic(consumerId, sVarDel);
 				return CONSTS.REVOKE_NOK;
-			}
-		}
-
-		if (needCreate) {
-			if (createAndBind(topic, realQueueName) == CONSTS.REVOKE_OK) {
-				SVarObject sVarPut = new SVarObject();
-				String mainKey = topic;
-				String subKey = topic;
-				if (BasicOperation.putPermnentTopic(consumerId, topic, realQueueName, mainKey, subKey, this.groupId, sVarPut) == CONSTS.REVOKE_NOK) {
-					Global.get().setLastError(sVarPut.getVal());
-
-					SVarObject sVarDel = new SVarObject();
-					BasicOperation.delPermnentTopic(consumerId, sVarDel);
-					return CONSTS.REVOKE_NOK;
-				}
 			} else {
-				return CONSTS.REVOKE_NOK;
+				realQueueName = sVarPut.getVal();
 			}
 		}
 
@@ -524,7 +510,7 @@ public class VBrokerGroup {
 					continue;
 				}
 
-				if (vbroker.listenTopicPermnent(topic, realQueueName, consumerId) == CONSTS.REVOKE_OK) {
+				if (vbroker.listenTopicPermnent(topicName, realQueueName, consumerId) == CONSTS.REVOKE_OK) {
 					listenSuccId.add(vbroker.getVBrokerId());
 				} else {
 					allOk = false;
@@ -536,7 +522,7 @@ public class VBrokerGroup {
 				for (String vbrokerId : listenSuccId) {
 					VBroker vbroker = vbrokerMap.get(vbrokerId);
 					if (vbroker != null) {
-						vbroker.unlistenTopicPermnent(topic, consumerId);
+						vbroker.unlistenTopicPermnent(topicName, consumerId);
 					}
 				}
 			}
@@ -584,8 +570,10 @@ public class VBrokerGroup {
 		return res;
 	}
 
-	public int listenTopicWildcard(String mainKey, String subKey, String consumerId) {
+	public int listenTopicWildcard(Queue topic, String subKey, String consumerId) {
 		int res = CONSTS.REVOKE_NOK;
+		String topicId = topic.getQueueId();
+//		String mainKey = topic.getQueueName();
 
 		// move repairdNodes to validNodes
 		doMerge();
@@ -599,7 +587,6 @@ public class VBrokerGroup {
 		Set<String> listenSuccId = new HashSet<String>();
 
 		String realQueueName = null;
-		boolean needCreate = false;
 		SVarObject sVar1 = new SVarObject(); // REAL_QUEUE
 		SVarObject sVar2 = new SVarObject(); // MAIN_KEY
 		SVarObject sVar3 = new SVarObject(); // SUB_KEY
@@ -607,28 +594,14 @@ public class VBrokerGroup {
 		if (BasicOperation.getPermnentTopic(consumerId, sVar1, sVar2, sVar3, sVar4) == CONSTS.REVOKE_OK) {
 			realQueueName = sVar1.getVal();
 		} else {
-			SVarObject sVarRealQueue = new SVarObject();
-			if (BasicOperation.genPermQueue(sVarRealQueue) == CONSTS.REVOKE_OK) {
-				realQueueName = sVarRealQueue.getVal();
-				needCreate = true;
-			} else {
-				logger.error("call genPermQueue error.");
+			SVarObject sVarPut = new SVarObject();
+			if (BasicOperation.putPermnentTopic(topicId, consumerId, subKey, sVarPut) == CONSTS.REVOKE_NOK) {
+				Global.get().setLastError(sVarPut.getVal());
+				SVarObject sVarDel = new SVarObject();
+				BasicOperation.delPermnentTopic(consumerId, sVarDel);
 				return CONSTS.REVOKE_NOK;
-			}
-		}
-
-		if (needCreate) {
-			if (createAndBind(subKey, realQueueName) == CONSTS.REVOKE_OK) {
-				SVarObject sVarPut = new SVarObject();
-				if (BasicOperation.putPermnentTopic(consumerId, mainKey, realQueueName, mainKey, subKey, this.groupId, sVarPut) == CONSTS.REVOKE_NOK) {
-					Global.get().setLastError(sVarPut.getVal());
-
-					SVarObject sVarDel = new SVarObject();
-					BasicOperation.delPermnentTopic(consumerId, sVarDel);
-					return CONSTS.REVOKE_NOK;
-				}
 			} else {
-				return CONSTS.REVOKE_NOK;
+				realQueueName = sVarPut.getVal();
 			}
 		}
 

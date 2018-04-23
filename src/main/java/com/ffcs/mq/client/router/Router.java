@@ -652,8 +652,9 @@ public class Router {
 			}
 			
 			VBrokerGroup vbGroup = queue2group.get(topic);
+			Queue topicObj = queueMap.get(topic);
 			if (vbGroup != null) {
-				res = vbGroup.listenTopicPermnent(topic, consumerId);
+				res = vbGroup.listenTopicPermnent(topicObj, consumerId);
 				if (res == CONSTS.REVOKE_OK) {
 					incBindInfo(clientID, CONSTS.TYPE_TOPIC, CONSTS.TOPIC_PERMERNENT, topic, topic, topic, consumerId);
 					
@@ -785,8 +786,9 @@ public class Router {
 			}
 			
 			VBrokerGroup vbGroup = queue2group.get(mainKey);
+			Queue topicObj = queueMap.get(mainKey);
 			if (vbGroup != null) {
-				res = vbGroup.listenTopicWildcard(mainKey, subKey, consumerId);
+				res = vbGroup.listenTopicWildcard(topicObj, subKey, consumerId);
 				if (res == CONSTS.REVOKE_OK) {
 					incBindInfo(clientID, CONSTS.TYPE_TOPIC, CONSTS.TOPIC_WILDCARD, mainKey, mainKey, subKey, consumerId);
 					

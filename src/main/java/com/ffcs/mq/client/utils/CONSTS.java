@@ -129,7 +129,7 @@ public class CONSTS {
 	public static final String FUN_GEN_CONSUMER_ID = "genConsumerID";
 	public static final String FUN_GEN_PERM_QUEUE = "genPermQueue";
 	public static final String FUN_GETPERMNENTTOPIC = "getPermnentTopic";
-	public static final String FUN_PUTPERMNENTTOPIC = "putPermnentTopic";
+	public static final String FUN_PUTPERMNENTTOPIC = "savePermnentTopic";
 	public static final String FUN_DELPERMNENTTOPIC = "delPermnentTopic";
 	public static final String FUN_PURGE_QUEUE = "purgeQueueByClient";
 	public static final String FUN_URL_TEST = "test";

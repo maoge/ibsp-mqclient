@@ -468,8 +468,7 @@ public class BasicOperation {
 		return ret;
 	}
 
-	public static int putPermnentTopic(String consumerId, String srcQueue, String realQueue, String mainKey, String subKey, String groupId,
-			SVarObject sVar) {
+	public static int putPermnentTopic(String queueId, String consumerId, String subKey, SVarObject sVar) {
 		int ret = CONSTS.REVOKE_NOK;
 
 		String rootUrl = Global.get().getNextUrl();
@@ -479,28 +478,22 @@ public class BasicOperation {
 			}
 		}
 		
-		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.CONFIGSVR, CONSTS.FUN_PUTPERMNENTTOPIC);
-		String reqParam = String.format("%s=%s&%s=%s&%s=%s&%s=%s&%s=%s&%s=%s&%s=%s&%s=%s",
+		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.MQSVR, CONSTS.FUN_PUTPERMNENTTOPIC);
+		String reqParam = String.format("%s=%s&%s=%s&%s=%s",
+				CONSTS.JSON_HEADER_QUEUE_ID, queueId,
 				CONSTS.JSON_HEADER_CONSUMER_ID, consumerId,
-				CONSTS.JSON_HEADER_SRC_QUEUE, srcQueue,
-				CONSTS.JSON_HEADER_REAL_QUEUE, realQueue,
-				CONSTS.JSON_HEADER_MAIN_TOPIC, mainKey,
 				CONSTS.JSON_HEADER_SUB_TOPIC, subKey,
-				CONSTS.JSON_HEADER_GROUP_ID, groupId,
-				CONSTS.JSON_HEADER_CONSUMER_ID, consumerId,
 				CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
 		
-		SVarObject sVarInvoke = new SVarObject();
-		boolean retInvoke = HttpUtils.postData(reqUrl, reqParam, sVarInvoke);
+		boolean retInvoke = HttpUtils.postData(reqUrl, reqParam, sVar);
 		if (retInvoke) {
-			JSONObject jsonObj = JSONObject.parseObject(sVarInvoke.getVal());
+			JSONObject jsonObj = JSONObject.parseObject(sVar.getVal());
 			ret = jsonObj.getIntValue(CONSTS.JSON_HEADER_RET_CODE);
+			String retInfo = jsonObj.getString(CONSTS.JSON_HEADER_RET_INFO);
+			sVar.setVal(retInfo);
 			
 			if (ret != CONSTS.REVOKE_OK) {
-				String retInfo = jsonObj.getString(CONSTS.JSON_HEADER_RET_INFO);
-				sVar.setVal(retInfo);
 				logger.error(retInfo);
-				
 				if (ret == CONSTS.REVOKE_AUTH_FAIL) {
 					Global.get().clearAuth();
 					Global.get().setLastError(CONSTS.ERR_AUTH_FAIL);
