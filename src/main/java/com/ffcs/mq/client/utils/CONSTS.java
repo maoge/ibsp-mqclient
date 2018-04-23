@@ -127,7 +127,6 @@ public class CONSTS {
 	public static final String FUN_PUT_CLNT_STAT_INFO = "putClientStatisticInfo";
 	public static final String FUN_URL_MESSAGE_READY = "getMessageReady";
 	public static final String FUN_GEN_CONSUMER_ID = "genConsumerID";
-	public static final String FUN_GEN_PERM_QUEUE = "genPermQueue";
 	public static final String FUN_GETPERMNENTTOPIC = "getPermnentTopic";
 	public static final String FUN_PUTPERMNENTTOPIC = "savePermnentTopic";
 	public static final String FUN_DELPERMNENTTOPIC = "delPermnentTopic";

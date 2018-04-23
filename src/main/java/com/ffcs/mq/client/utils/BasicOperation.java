@@ -372,49 +372,6 @@ public class BasicOperation {
 		return ret;
 	}
 
-	public static int genPermQueue(SVarObject sVarQueue) {
-		int ret = CONSTS.REVOKE_NOK;
-
-		String rootUrl = Global.get().getNextUrl();
-		if (!Global.get().isAuthed()) {
-			if (!auth(SysConfig.get().getMqUserId(), SysConfig.get().getMqUserPwd())) {
-				return ret;
-			}
-		}
-		
-		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.CONFIGSVR, CONSTS.FUN_GEN_PERM_QUEUE);
-		String reqParam = String.format("%s=%s", CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
-
-		SVarObject sVarInvoke = new SVarObject();
-		boolean retInvoke = HttpUtils.postData(reqUrl, reqParam, sVarInvoke);
-		if (retInvoke) {
-			JSONObject jsonObj = JSONObject.parseObject(sVarInvoke.getVal());
-			ret = jsonObj.getIntValue(CONSTS.JSON_HEADER_RET_CODE);
-			
-			if (ret != CONSTS.REVOKE_OK) {
-				logger.error(sVarInvoke.getVal());
-				if (ret == CONSTS.REVOKE_AUTH_FAIL) {
-					Global.get().clearAuth();
-					Global.get().setLastError(CONSTS.ERR_AUTH_FAIL);
-				} else {
-					String errInfo = jsonObj.getString(CONSTS.JSON_HEADER_RET_INFO);
-					Global.get().setLastError(errInfo);
-				}
-			} else {
-				String retPermQueue = jsonObj.getString(CONSTS.JSON_HEADER_PERM_QUEUE);
-				if (!StringUtils.isNullOrEmtpy(retPermQueue)) {
-					sVarQueue.setVal(retPermQueue);
-				}
-			}
-		} else {
-			logger.error("http request:{} error.", reqUrl);
-			logger.error(Global.get().getLastError());
-			Global.get().putBrokenUrl(rootUrl);
-		}
-
-		return ret;
-	}
-
 	public static int getPermnentTopic(String consumerId, SVarObject sVarRealQueue, 
 			SVarObject sVarMainKey, SVarObject sVarSubKey, SVarObject sVarGroupId) {
 		int ret = CONSTS.REVOKE_NOK;
