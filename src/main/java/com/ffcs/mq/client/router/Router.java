@@ -679,18 +679,17 @@ public class Router {
 	public int unlistenTopicPermnent(String clientID, String consumerId) {
 		int res = CONSTS.REVOKE_NOK;
 
-		SVarObject sVarSrcQueue = new SVarObject();
 		SVarObject sVarRealQueue = new SVarObject();
 		SVarObject sVarMainKey = new SVarObject();
 		SVarObject sVarSubKey = new SVarObject();
 		SVarObject sVarGroupId = new SVarObject();
 
-		if (BasicOperation.getPermnentTopic(consumerId, sVarSrcQueue, sVarRealQueue, sVarMainKey, sVarSubKey, sVarGroupId) != CONSTS.REVOKE_OK) {
+		if (BasicOperation.getPermnentTopic(consumerId, sVarRealQueue, sVarMainKey, sVarSubKey, sVarGroupId) != CONSTS.REVOKE_OK) {
 			return CONSTS.REVOKE_OK;
 		}
 
 		// listenTopicPermnent中mainKey和subKey填的都是topic
-		String topic = sVarSrcQueue.getVal();
+		String topic = sVarMainKey.getVal();
 		
 		if (!isQueueListened(consumerId)) {
 			String err = String.format("topic:%s consumerId:%s not listened.", topic, consumerId);
@@ -813,13 +812,12 @@ public class Router {
 	public int unlistenTopicWildcard(String clientID, String consumerId) {
 		int res = CONSTS.REVOKE_NOK;
 
-		SVarObject sVarSrcQueue = new SVarObject();
 		SVarObject sVarRealQueue = new SVarObject();
 		SVarObject sVarMainKey = new SVarObject();
 		SVarObject sVarSubKey = new SVarObject();
 		SVarObject sVarGroupId = new SVarObject();
 
-		if (BasicOperation.getPermnentTopic(consumerId, sVarSrcQueue, sVarRealQueue, sVarMainKey, sVarSubKey, sVarGroupId) != CONSTS.REVOKE_OK) {
+		if (BasicOperation.getPermnentTopic(consumerId, sVarRealQueue, sVarMainKey, sVarSubKey, sVarGroupId) != CONSTS.REVOKE_OK) {
 			return CONSTS.REVOKE_OK;
 		}
 
@@ -892,15 +890,14 @@ public class Router {
 	public int logicQueueDelete(String consumerId) {
 		int res = CONSTS.REVOKE_NOK;
 
-		SVarObject sVarSrcQueue = new SVarObject();
 		SVarObject sVarRealQueue = new SVarObject();
 		SVarObject sVarMainKey = new SVarObject();
 		SVarObject sVarSubKey = new SVarObject();
 		SVarObject sVarGroupId = new SVarObject();
 
-		if (BasicOperation.getPermnentTopic(consumerId, sVarSrcQueue, sVarRealQueue, sVarMainKey, sVarSubKey, sVarGroupId) == CONSTS.REVOKE_OK) {
+		if (BasicOperation.getPermnentTopic(consumerId, sVarRealQueue, sVarMainKey, sVarSubKey, sVarGroupId) == CONSTS.REVOKE_OK) {
 
-			String srcQueue = sVarSrcQueue.getVal();
+			String srcQueue = sVarMainKey.getVal();
 			String realQueue = sVarRealQueue.getVal();
 			String groupId = sVarGroupId.getVal();
 			

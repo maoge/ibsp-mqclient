@@ -1,15 +1,17 @@
-package test;
+ package test;
 
 import com.ffcs.mq.client.api.IMQClient;
 import com.ffcs.mq.client.api.MQClientImpl;
 import com.ffcs.mq.client.api.MQMessage;
 import com.ffcs.mq.client.utils.CONSTS;
+import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class SingleTopicPermnentProducer {
 
 	public static void main(String[] args) {
-		String topic = "abc.*";
-
+		String confName = "test";
+		String topic = PropertiesUtils.getInstance(confName).get("topicName");
+		
 		IMQClient mqClient = new MQClientImpl();
 		mqClient.setAuthInfo("admin", "admin");
 		int retConn = mqClient.connect(topic);

@@ -481,12 +481,11 @@ public class VBrokerGroup {
 
 		String realQueueName = null;
 		boolean needCreate = false;
-		SVarObject sVar0 = new SVarObject(); // SRC_QUEUE
 		SVarObject sVar1 = new SVarObject(); // REAL_QUEUE
 		SVarObject sVar2 = new SVarObject(); // MAIN_KEY
 		SVarObject sVar3 = new SVarObject(); // SUB_KEY
 		SVarObject sVar4 = new SVarObject(); // GROUP_ID
-		if (BasicOperation.getPermnentTopic(consumerId, sVar0, sVar1, sVar2, sVar3, sVar4) == CONSTS.REVOKE_OK) {
+		if (BasicOperation.getPermnentTopic(consumerId, sVar1, sVar2, sVar3, sVar4) == CONSTS.REVOKE_OK) {
 			realQueueName = sVar1.getVal();
 		} else {
 			SVarObject sVarRealQueue = new SVarObject();
@@ -601,12 +600,11 @@ public class VBrokerGroup {
 
 		String realQueueName = null;
 		boolean needCreate = false;
-		SVarObject sVar0 = new SVarObject(); // SRC_QUEUE
 		SVarObject sVar1 = new SVarObject(); // REAL_QUEUE
 		SVarObject sVar2 = new SVarObject(); // MAIN_KEY
 		SVarObject sVar3 = new SVarObject(); // SUB_KEY
 		SVarObject sVar4 = new SVarObject(); // GROUP_ID
-		if (BasicOperation.getPermnentTopic(consumerId, sVar0, sVar1, sVar2, sVar3, sVar4) == CONSTS.REVOKE_OK) {
+		if (BasicOperation.getPermnentTopic(consumerId, sVar1, sVar2, sVar3, sVar4) == CONSTS.REVOKE_OK) {
 			realQueueName = sVar1.getVal();
 		} else {
 			SVarObject sVarRealQueue = new SVarObject();

@@ -4,11 +4,13 @@ import com.ffcs.mq.client.api.IMQClient;
 import com.ffcs.mq.client.api.MQClientImpl;
 import com.ffcs.mq.client.api.MQMessage;
 import com.ffcs.mq.client.utils.CONSTS;
+import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class SingleTopicPermnentConsumer {
 
 	public static void main(String[] args) {
-		String topic = "abc.*";
+		String confName = "test";
+		String topic = PropertiesUtils.getInstance(confName).get("topicName");
 
 		IMQClient mqClient = new MQClientImpl();
 		mqClient.setAuthInfo("admin", "admin");
@@ -24,7 +26,7 @@ public class SingleTopicPermnentConsumer {
 		}
 
 		// mqClient.genConsumerId() 获取consumerId
-		String consumerId = "ConID_EVW2q0We7PKgshGH";
+		String consumerId = "ConId_3UDCKccALY8PMA7x";
 
 		if (mqClient.listenTopicPermnent(topic, consumerId) == CONSTS.REVOKE_OK) {
 			String info = String.format("listen success.");

@@ -415,8 +415,8 @@ public class BasicOperation {
 		return ret;
 	}
 
-	public static int getPermnentTopic(String consumerId, SVarObject sVarSrcQueue, SVarObject sVarRealQueue, SVarObject sVarMainKey,
-			SVarObject sVarSubKey, SVarObject sVarGroupId) {
+	public static int getPermnentTopic(String consumerId, SVarObject sVarRealQueue, 
+			SVarObject sVarMainKey, SVarObject sVarSubKey, SVarObject sVarGroupId) {
 		int ret = CONSTS.REVOKE_NOK;
 
 		String rootUrl = Global.get().getNextUrl();
@@ -426,7 +426,7 @@ public class BasicOperation {
 			}
 		}
 		
-		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.CONFIGSVR, CONSTS.FUN_GETPERMNENTTOPIC);
+		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.MQSVR, CONSTS.FUN_GETPERMNENTTOPIC);
 		String reqParam = String.format("%s=%s&%s=%s", CONSTS.JSON_HEADER_CONSUMER_ID, consumerId,
 				CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
 		
@@ -439,12 +439,10 @@ public class BasicOperation {
 			if (ret == CONSTS.REVOKE_OK) {
 				JSONObject subJson = jsonObj.getJSONObject(CONSTS.JSON_HEADER_RET_INFO);
 				String realQueue = subJson.getString(CONSTS.JSON_HEADER_REAL_QUEUE);
-				String srcQueue = subJson.getString(CONSTS.JSON_HEADER_SRC_QUEUE);
 				String mainKey = subJson.getString(CONSTS.JSON_HEADER_MAIN_TOPIC);
 				String subKey = subJson.getString(CONSTS.JSON_HEADER_SUB_TOPIC);
 				String groupId = subJson.getString(CONSTS.JSON_HEADER_GROUP_ID);
-
-				sVarSrcQueue.setVal(srcQueue);
+				
 				sVarRealQueue.setVal(realQueue);
 				sVarMainKey.setVal(mainKey);
 				sVarSubKey.setVal(subKey);
