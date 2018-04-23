@@ -38,16 +38,12 @@ public class DataTransfer {
 		String desUser = "mq";
 		String desPwd = "amqp";
 		
-		Broker srcBroker = new Broker("500", "xx", "xx", srcIP, srcIP, srcPort, srcMgrPort, srcUser, srcPwd, "/", "x",
-				true, "501", "vb-501", "1", "g-1");
-		VBroker srcVBroker = new VBroker("vbrokerId", "vbrokerName", "500", srcIP, 
-				"x", false, true, "groupId", "groupName");
+		Broker srcBroker = new Broker("500", "xx", srcIP, srcPort, srcUser, srcPwd, "/");
+		VBroker srcVBroker = new VBroker("vbrokerId", "vbrokerName", "500", true);
 		srcVBroker.addBroker(srcBroker);
 		
-		Broker desBroker = new Broker("501", "xx", "xx", desIP, desIP, desPort, desMgrPort, desUser, desPwd, "/", "x",
-				true, "501", "vb-501", "1", "g-1");
-		VBroker desVBroker = new VBroker("vbrokerId", "vbrokerName", "501", desIP, 
-				"x", false, true, "groupId", "groupName");
+		Broker desBroker = new Broker("501", "xx", desIP, desPort, desUser, desPwd, "/");
+		VBroker desVBroker = new VBroker("vbrokerId", "vbrokerName", "501", true);
 		desVBroker.addBroker(desBroker);
 		
 		ArrayList<String> queueList = new ArrayList<String>(24);

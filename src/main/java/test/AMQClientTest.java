@@ -13,11 +13,9 @@ public class AMQClientTest {
 		String vhost = "/";
 		String host = "192.168.14.209";
 		int port = 9230;
-
-		Broker broker = new Broker("500", "b-500", "poc-206", host, host, port, 18999, userName, passwd, vhost, "UMPOMUHMYOTULGUVAWXI",
-				true, "501", "vb-501", "1", "g-1");
-		VBroker vbroker = new VBroker("vbrokerId", "vbrokerName", "500", host, 
-				"UMPOMUHMYOTULGUVAWXI", false, true, "groupId", "groupName");
+		
+		Broker broker = new Broker("500", "b-500", host, port, userName, passwd, vhost);
+		VBroker vbroker = new VBroker("vbrokerId", "vbrokerName", "500", true);
 		vbroker.addBroker(broker);
 		
 		RabbitMQNode rabbitNode = new RabbitMQNode(vbroker);

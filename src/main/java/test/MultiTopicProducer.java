@@ -48,11 +48,9 @@ public class MultiTopicProducer {
 			String vhost = "/";
 			String host = "192.168.14.208";
 			int port = 2344;
-
-			Broker broker = new Broker("500", "b-500", "poc-206", host, host, port, 12344, userName, passwd, vhost, "UMPOMUHMYOTULGUVAWXI",
-					true, "501", "vb-501", "1", "g-1");
-			VBroker vbroker = new VBroker("vbrokerId", "vbrokerName", "500", host, 
-					"UMPOMUHMYOTULGUVAWXI", false, true, "groupId", "groupName");
+			
+			Broker broker = new Broker("500", "b-500", host, port, userName, passwd, vhost);
+			VBroker vbroker = new VBroker("vbrokerId", "vbrokerName", "500", true);
 			vbroker.addBroker(broker);
 			
 			RabbitMQNode mqClient = new RabbitMQNode(vbroker);
