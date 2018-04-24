@@ -125,12 +125,12 @@ public class CONSTS {
 	public static final String FUN_CREATEQUEUEBYCLIENT = "createQueueByClient";
 	public static final String FUN_DELETEQUEUEBYCLIENT = "deleteQueueByClient";
 	public static final String FUN_PUT_CLNT_STAT_INFO = "putClientStatisticInfo";
-	public static final String FUN_URL_MESSAGE_READY = "getMessageReady";
+	public static final String FUN_URL_MESSAGE_READY = "getMessageReady"; //TODO
 	public static final String FUN_GEN_CONSUMER_ID = "genConsumerID";
 	public static final String FUN_GETPERMNENTTOPIC = "getPermnentTopic";
 	public static final String FUN_PUTPERMNENTTOPIC = "savePermnentTopic";
 	public static final String FUN_DELPERMNENTTOPIC = "delPermnentTopic";
-	public static final String FUN_PURGE_QUEUE = "purgeQueueByClient";
+	public static final String FUN_PURGE_QUEUE = "purgeQueueByClient"; //TODO
 	public static final String FUN_URL_TEST = "test";
 	public static final String FUN_URL_AUTH = "auth";
 	
