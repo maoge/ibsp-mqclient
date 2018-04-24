@@ -4,11 +4,13 @@ import com.ffcs.mq.client.api.IMQClient;
 import com.ffcs.mq.client.api.MQClientImpl;
 import com.ffcs.mq.client.api.MQMessage;
 import com.ffcs.mq.client.utils.CONSTS;
+import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class SingleTopicAnonymousProducer {
 
 	public static void main(String[] args) {
-		String topic = "TOPIC_TEST";
+		String confName = "test";
+		String topic = PropertiesUtils.getInstance(confName).get("topicName");
 
 		IMQClient mqClient = new MQClientImpl();
 		mqClient.setAuthInfo("admin", "admin");
@@ -23,7 +25,7 @@ public class SingleTopicAnonymousProducer {
 			return;
 		}
 
-		int totalCnt = 1000000;
+		int totalCnt = 10000000;
 		int packLen = 128;
 
 		byte[] sendBuf = new byte[packLen];

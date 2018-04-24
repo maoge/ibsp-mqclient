@@ -4,11 +4,13 @@ import com.ffcs.mq.client.api.IMQClient;
 import com.ffcs.mq.client.api.MQClientImpl;
 import com.ffcs.mq.client.api.MQMessage;
 import com.ffcs.mq.client.utils.CONSTS;
+import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class SingleTopicAnonymousConsumer {
 
 	public static void main(String[] args) {
-		String topic = "TOPIC_TEST";
+		String confName = "test";
+		String topic = PropertiesUtils.getInstance(confName).get("topicName");
 
 		IMQClient mqClient = new MQClientImpl();
 		mqClient.setAuthInfo("admin", "admin");
@@ -34,7 +36,7 @@ public class SingleTopicAnonymousConsumer {
 			return;
 		}
 
-		int totalCnt = 1000000;
+		int totalCnt = 10000000;
 		MQMessage message = new MQMessage();
 
 		long start = System.currentTimeMillis();

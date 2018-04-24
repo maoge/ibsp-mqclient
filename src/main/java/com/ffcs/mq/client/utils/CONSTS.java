@@ -144,8 +144,11 @@ public class CONSTS {
 	public static final String PARAM_ORDERED = "GLOBAL_ORDERED";
 	public static final String PARAM_GROUPID = "GROUP_ID";
 	public static final String PARAM_CLIENTINFO = "CLIENT_INFO";
+	public static final String PARAM_CLIENTTYPE = "CLIENT_TYPE";
 	public static final String PARAM_LSNRADDR = "LSNR_ADDR";
 	public static final String PARAM_MAGIC_KEY = "MAGIC_KEY";
+	
+	public static final String TYPE_MQ_CLIENT = "MQ_CLIENT";
 
 	public static final String JSON_HEADER_ID = "ID";
 	public static final String JSON_HEADER_NAME = "NAME";

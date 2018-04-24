@@ -4,12 +4,14 @@ import com.ffcs.mq.client.api.IMQClient;
 import com.ffcs.mq.client.api.MQClientImpl;
 import com.ffcs.mq.client.api.MQMessage;
 import com.ffcs.mq.client.utils.CONSTS;
+import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class SingleWildcardTopicProducer {
 
 	public static void main(String[] args) {
-		String mainKey = "abc.*";
-		String subKey = "abc.1";
+		String confName = "test";
+		String mainKey = PropertiesUtils.getInstance(confName).get("topicName");
+		String subKey = PropertiesUtils.getInstance(confName).get("subKey");
 
 		IMQClient mqClient = new MQClientImpl();
 		mqClient.setAuthInfo("admin", "admin");

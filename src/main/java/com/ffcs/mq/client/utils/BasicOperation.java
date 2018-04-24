@@ -339,7 +339,7 @@ public class BasicOperation {
 			}
 		}
 		
-		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.CONFIGSVR, CONSTS.FUN_GEN_CONSUMER_ID);
+		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.MQSVR, CONSTS.FUN_GEN_CONSUMER_ID);
 		String reqParam = String.format("%s=%s", CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
 		
 		SVarObject sVarInvoke = new SVarObject();
@@ -521,9 +521,10 @@ public class BasicOperation {
 			}
 		}
 		
-		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.CONFIGSVR, CONSTS.FUN_PUT_CLNT_STAT_INFO);
-		String params = String.format("%s=%s&%s=%s&%s=%s", CONSTS.PARAM_CLIENTINFO, context,
+		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.METASVR, CONSTS.FUN_PUT_CLNT_STAT_INFO);
+		String params = String.format("%s=%s&%s=%s&%s=%s&%s=%s", CONSTS.PARAM_CLIENTINFO, context,
 				CONSTS.PARAM_LSNRADDR, lsnrAddr,
+				CONSTS.PARAM_CLIENTTYPE, CONSTS.TYPE_MQ_CLIENT,
 				CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
 
 		SVarObject sVarInvoke = new SVarObject();

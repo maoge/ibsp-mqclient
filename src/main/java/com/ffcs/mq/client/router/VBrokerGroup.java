@@ -494,7 +494,7 @@ public class VBrokerGroup {
 			if (BasicOperation.putPermnentTopic(topicId, consumerId, subKey, sVarPut) == CONSTS.REVOKE_NOK) {
 				Global.get().setLastError(sVarPut.getVal());
 				SVarObject sVarDel = new SVarObject();
-				BasicOperation.delPermnentTopic(consumerId, sVarDel);
+//				BasicOperation.delPermnentTopic(consumerId, sVarDel);
 				return CONSTS.REVOKE_NOK;
 			} else {
 				realQueueName = sVarPut.getVal();
@@ -598,7 +598,7 @@ public class VBrokerGroup {
 			if (BasicOperation.putPermnentTopic(topicId, consumerId, subKey, sVarPut) == CONSTS.REVOKE_NOK) {
 				Global.get().setLastError(sVarPut.getVal());
 				SVarObject sVarDel = new SVarObject();
-				BasicOperation.delPermnentTopic(consumerId, sVarDel);
+//				BasicOperation.delPermnentTopic(consumerId, sVarDel);
 				return CONSTS.REVOKE_NOK;
 			} else {
 				realQueueName = sVarPut.getVal();

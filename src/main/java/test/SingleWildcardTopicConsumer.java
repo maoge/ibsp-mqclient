@@ -4,12 +4,15 @@ import com.ffcs.mq.client.api.IMQClient;
 import com.ffcs.mq.client.api.MQClientImpl;
 import com.ffcs.mq.client.api.MQMessage;
 import com.ffcs.mq.client.utils.CONSTS;
+import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class SingleWildcardTopicConsumer {
 
 	public static void main(String[] args) {
-		String mainKey = "abc.*";
-		String subKey = "abc.1";
+		String confName = "test";
+		String mainKey = PropertiesUtils.getInstance(confName).get("topicName");
+		String subKey = PropertiesUtils.getInstance(confName).get("subKey");
+		String consumerId = PropertiesUtils.getInstance(confName).get("consumerId");
 
 		IMQClient mqClient = new MQClientImpl();
 		mqClient.setAuthInfo("admin", "admin");
@@ -24,9 +27,6 @@ public class SingleWildcardTopicConsumer {
 			return;
 		}
 
-		// mqClient.genConsumerId() 获取consumerId
-		String consumerId = "ConID_qdrtgQypeD11PoJV";
-
 		if (mqClient.listenTopicWildcard(mainKey, subKey, consumerId) == CONSTS.REVOKE_OK) {
 			String info = String.format("listen success.");
 			System.out.println(info);
@@ -38,7 +38,7 @@ public class SingleWildcardTopicConsumer {
 			return;
 		}
 
-		int totalCnt = 1000000;
+		int totalCnt = 10000000;
 		MQMessage message = new MQMessage();
 
 		long start = System.currentTimeMillis();
