@@ -1281,7 +1281,7 @@ public class RabbitMQNode implements IMQNode {
 			if (consumerId != null && !consumerId.equals("")) {
 				qDtl = queueDtlMap.get(consumerId);
 			} else {
-				qDtl = queueDtlMap.get(message.getSourceType());
+				qDtl = queueDtlMap.get(message.getSourceName());
 			}
 		}
 		if (qDtl == null) {
