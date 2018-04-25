@@ -143,6 +143,7 @@ public class CONSTS {
 	public static final String PARAM_DURABLE = "IS_DURABLE";
 	public static final String PARAM_ORDERED = "GLOBAL_ORDERED";
 	public static final String PARAM_GROUPID = "GROUP_ID";
+	public static final String PARAM_SERVID = "SERV_ID";
 	public static final String PARAM_CLIENTINFO = "CLIENT_INFO";
 	public static final String PARAM_CLIENTTYPE = "CLIENT_TYPE";
 	public static final String PARAM_LSNRADDR = "LSNR_ADDR";

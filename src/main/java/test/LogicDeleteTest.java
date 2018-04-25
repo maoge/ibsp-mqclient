@@ -3,11 +3,14 @@ package test;
 import com.ffcs.mq.client.api.IMQClient;
 import com.ffcs.mq.client.api.MQClientImpl;
 import com.ffcs.mq.client.utils.CONSTS;
+import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class LogicDeleteTest {
 
 	public static void main(String[] args) {
-		String consumerID = "ConID_Q45fVV00Xn13yeWs";
+		String confName = "test";
+		String consumerID = PropertiesUtils.getInstance(confName).get("consumerId");
+		
 		IMQClient mqClient = new MQClientImpl();
 		mqClient.setAuthInfo("admin", "admin");
 		int ret = mqClient.logicQueueDelete(consumerID);

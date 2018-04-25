@@ -4,13 +4,13 @@ import com.ffcs.mq.client.api.IMQClient;
 import com.ffcs.mq.client.api.MQClientImpl;
 import com.ffcs.mq.client.utils.PropertiesUtils;
 
-public class CreateTestQueue {
+public class CreateQueueTest {
 
 	public static void main(String[] args) {
 		String confName = "test";
 		String queueNamePrefix = PropertiesUtils.getInstance(confName).get("queueNamePrefix");
 		int queueCount = PropertiesUtils.getInstance(confName).getInt("queueCount");
-		String groupId = "50055";
+		String groupId = PropertiesUtils.getInstance(confName).get("servId");
 		int qType = 1;
 
 		IMQClient mqClient = new MQClientImpl();

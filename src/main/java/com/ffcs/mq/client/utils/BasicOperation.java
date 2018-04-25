@@ -183,13 +183,13 @@ public class BasicOperation {
 			}
 		}
 		
-		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.CONFIGSVR, CONSTS.FUN_CREATEQUEUEBYCLIENT);
+		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.MQSVR, CONSTS.FUN_CREATEQUEUEBYCLIENT);
 		String reqParam = String.format("%s=%s&%s=%s&%s=%s&%s=%s&%s=%s&%s=%s",
 				CONSTS.PARAM_QUEUENAME, queueName,
 				CONSTS.PARAM_QUEUETYPE, type,
 				CONSTS.PARAM_DURABLE, durable ? CONSTS.DURABLE : CONSTS.NOT_DURABLE,
 				CONSTS.PARAM_ORDERED, ordered ? CONSTS.GLOBAL_ORDERED : CONSTS.NOT_GLOBAL_ORDERED,
-				CONSTS.PARAM_GROUPID, groupId,
+				CONSTS.PARAM_SERVID, groupId,
 				CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
 		
 		SVarObject sVarInvoke = new SVarObject();
@@ -238,7 +238,7 @@ public class BasicOperation {
 			}
 		}
 		
-		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.CONFIGSVR, CONSTS.FUN_DELETEQUEUEBYCLIENT);
+		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.MQSVR, CONSTS.FUN_DELETEQUEUEBYCLIENT);
 		String reqParam = String.format("%s=%s&%s=%s", CONSTS.PARAM_QUEUENAME, queueName,
 				CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
 
@@ -478,7 +478,7 @@ public class BasicOperation {
 			}
 		}
 		
-		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.CONFIGSVR, CONSTS.FUN_DELPERMNENTTOPIC);
+		String reqUrl = String.format("%s/%s/%s", rootUrl, CONSTS.MQSVR, CONSTS.FUN_DELPERMNENTTOPIC);
 		String reqParam = String.format("%s=%s&%s=%s", CONSTS.JSON_HEADER_CONSUMER_ID, consumerId,
 				CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
 		
