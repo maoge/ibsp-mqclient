@@ -7,12 +7,15 @@ import com.ffcs.mq.client.api.IMQClient;
 import com.ffcs.mq.client.api.MQClientImpl;
 import com.ffcs.mq.client.api.MQMessage;
 import com.ffcs.mq.client.utils.CONSTS;
+import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class MultiTopicConsumer {
 
 	private static AtomicLong[] normalCntVec;
 	private static AtomicLong[] errorCntVec;
 	private static AtomicLong maxTPS;
+	private static String userName;
+	private static String userPwd;
 
 	private static class TopicConsumer implements Runnable {
 
@@ -37,7 +40,7 @@ public class MultiTopicConsumer {
 			boolean needDeleteConsumerID = false;
 
 			IMQClient mqClient = new MQClientImpl();
-			mqClient.setAuthInfo("admin", "admin");
+			mqClient.setAuthInfo(userName, userPwd);
 			int retConn = mqClient.connect(queueName);
 			if (retConn == CONSTS.REVOKE_OK) {
 				String info = String.format("%s connect success.", threadName);
@@ -72,7 +75,7 @@ public class MultiTopicConsumer {
 
 			long start = System.currentTimeMillis();
 			while (bRunning) {
-				int res = mqClient.consumeMessage(queueName, message, 0);
+				int res = mqClient.consumeMessage(consumerID, message, 0);
 				if (res == 1) {
 					if (mqClient.ackMessage(message) == CONSTS.REVOKE_OK) {
 						long cnt = normalCnt.incrementAndGet();
@@ -128,7 +131,7 @@ public class MultiTopicConsumer {
 		long totalDiff = 0;
 
 		for (; idx < proCount; idx++) {
-			String queueName = String.format("%s_%02d", queueNamePrefix, idx);
+			String queueName = String.format("%s%02d", queueNamePrefix, idx);
 
 			for (int conIdx = 0; conIdx < consumerCntPerQueue; conIdx++) {
 				String threadName = String.format("TOPICCONSUMER_%02d_%02d", idx, conIdx);
@@ -167,13 +170,17 @@ public class MultiTopicConsumer {
 	}
 
 	public static void main(String[] args) {
-		String queueNamePrefix = "LBTEST";
-		int proCount = 1;
-		int packLen = 128;
-		int totalTime = 300;
-		int consumerCntPerQueue = 2;
+		String confName = "test";
 
-		testMultiConsumer(queueNamePrefix, proCount, packLen, totalTime, consumerCntPerQueue);
+		String queueNamePrefix = PropertiesUtils.getInstance(confName).get("queueNamePrefix");
+		int queueCount = PropertiesUtils.getInstance(confName).getInt("queueCount");
+		int packLen = PropertiesUtils.getInstance(confName).getInt("packLen");
+		int totalTime = PropertiesUtils.getInstance(confName).getInt("totalTime");
+		int consumerCntPerQueue = PropertiesUtils.getInstance(confName).getInt("consumerCntPerQueue");
+		userName = PropertiesUtils.getInstance(confName).get("userName");
+		userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
+
+		testMultiConsumer(queueNamePrefix, queueCount, packLen, totalTime, consumerCntPerQueue);
 	}
 
 }

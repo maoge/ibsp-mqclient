@@ -8,11 +8,12 @@ import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class SingleQueueConsumer {
 	
-	private static void testConsumer(String queueNamePrefix, int packLen, int totalCnt) {
-		String queueName = String.format("%s%02d", queueNamePrefix, 0);
-
+	private static String userName;
+	private static String userPwd;
+	
+	private static void testConsumer(String queueName, int packLen, int totalCnt) {
 		IMQClient mqClient = new MQClientImpl();
-		mqClient.setAuthInfo("admin", "admin");
+		mqClient.setAuthInfo(userName, userPwd);
 		int retConn = mqClient.connect(queueName);
 		if (retConn == CONSTS.REVOKE_OK) {
 			String info = String.format("Connect success.");
@@ -71,11 +72,13 @@ public class SingleQueueConsumer {
 	public static void main(String[] args) {
 		String confName = "test";
 
-		String queueNamePrefix = PropertiesUtils.getInstance(confName).get("queueNamePrefix");
+		String queueName = PropertiesUtils.getInstance(confName).get("queueName");
 		int packLen = PropertiesUtils.getInstance(confName).getInt("packLen");
 		int totalCnt = 100000000;
+		userName = PropertiesUtils.getInstance(confName).get("userName");
+		userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
 
-		testConsumer(queueNamePrefix, packLen, totalCnt);
+		testConsumer(queueName, packLen, totalCnt);
 	}
 
 }

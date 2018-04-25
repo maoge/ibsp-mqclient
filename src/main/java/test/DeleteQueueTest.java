@@ -10,9 +10,11 @@ public class DeleteQueueTest {
 		String confName = "test";
 		String queueNamePrefix = PropertiesUtils.getInstance(confName).get("queueNamePrefix");
 		int queueCount = PropertiesUtils.getInstance(confName).getInt("queueCount");
+		String userName = PropertiesUtils.getInstance(confName).get("userName");
+		String userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
 
 		IMQClient mqClient = new MQClientImpl();
-		mqClient.setAuthInfo("admin", "admin");
+		mqClient.setAuthInfo(userName, userPwd);
 		for (int i = 0; i < queueCount; i++) {
 			String queueName = String.format("%s%02d", queueNamePrefix, i);
 			int resDec = mqClient.queueDelete(queueName);

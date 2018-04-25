@@ -14,6 +14,8 @@ public class MultiQueueConsumer {
 	private static AtomicLong[] normalCntVec;
 	private static AtomicLong[] errorCntVec;
 	private static AtomicLong maxTPS;
+	private static String userName;
+	private static String userPwd;
 
 	private static class TopicConsumer implements Runnable {
 
@@ -35,7 +37,7 @@ public class MultiQueueConsumer {
 		@Override
 		public void run() {
 			IMQClient mqClient = new MQClientImpl();
-			mqClient.setAuthInfo("admin", "admin");
+			mqClient.setAuthInfo(userName, userPwd);
 			int retConn = mqClient.connect(queueName);
 			if (retConn == CONSTS.REVOKE_OK) {
 
@@ -168,6 +170,8 @@ public class MultiQueueConsumer {
 		int queueCount = PropertiesUtils.getInstance(confName).getInt("queueCount");
 		int totalTime = PropertiesUtils.getInstance(confName).getInt("totalTime");
 		int consumerCntPerQueue = PropertiesUtils.getInstance(confName).getInt("consumerCntPerQueue");
+		userName = PropertiesUtils.getInstance(confName).get("userName");
+		userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
 
 		testMultiConsumer(queueNamePrefix, queueCount, totalTime, consumerCntPerQueue);
 	}

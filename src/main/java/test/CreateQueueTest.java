@@ -5,16 +5,18 @@ import com.ffcs.mq.client.api.MQClientImpl;
 import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class CreateQueueTest {
-
+	
 	public static void main(String[] args) {
 		String confName = "test";
 		String queueNamePrefix = PropertiesUtils.getInstance(confName).get("queueNamePrefix");
 		int queueCount = PropertiesUtils.getInstance(confName).getInt("queueCount");
 		String groupId = PropertiesUtils.getInstance(confName).get("servId");
+		String userName = PropertiesUtils.getInstance(confName).get("userName");
+		String userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
 		int qType = 1;
 
 		IMQClient mqClient = new MQClientImpl();
-		mqClient.setAuthInfo("admin", "admin");
+		mqClient.setAuthInfo(userName, userPwd);
 		for (int i = 0; i < queueCount; i++) {
 			String queueName = String.format("%s%02d", queueNamePrefix, i);
 			int resDec = mqClient.queueDeclare(queueName, true, groupId, qType);

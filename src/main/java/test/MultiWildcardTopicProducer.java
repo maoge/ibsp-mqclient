@@ -15,6 +15,8 @@ public class MultiWildcardTopicProducer {
 	private static AtomicLong[] normalCntVec;
 	private static AtomicLong[] errorCntVec;
 	private static AtomicLong maxTPS;
+	private static String userName;
+	private static String userPwd;
 
 	private static class WildcardTopicProducer implements Runnable {
 
@@ -41,7 +43,7 @@ public class MultiWildcardTopicProducer {
 		@Override
 		public void run() {
 			IMQClient mqClient = new MQClientImpl();
-			mqClient.setAuthInfo("admin", "admin");
+			mqClient.setAuthInfo(userName, userPwd);
 			int retConn = mqClient.connect(mainKey);
 			if (retConn == CONSTS.REVOKE_OK) {
 				bRunning = true;
@@ -98,7 +100,8 @@ public class MultiWildcardTopicProducer {
 		}
 	}
 
-	private static void multiWildcardTopicProducerTest(int proCount, int packLen, int totalTime) {
+	private static void multiWildcardTopicProducerTest(int proCount, int packLen, int totalTime,
+			String mainKey, String subKeyPrefix) {
 		normalCntVec = new AtomicLong[proCount];
 		errorCntVec = new AtomicLong[proCount];
 		for (int i = 0; i < proCount; i++) {
@@ -116,8 +119,7 @@ public class MultiWildcardTopicProducer {
 
 		for (; idx < proCount; idx++) {
 			String threadName = String.format("WILDCARD_TOPIC_PRODUCER_%d", idx);
-			String mainKey = "abc.*";
-			String subKey = String.format("%s.%02d", "abc", idx);
+			String subKey = String.format("%s%02d", subKeyPrefix, idx);
 
 			WildcardTopicProducer topicProducer = new WildcardTopicProducer(threadName, mainKey, subKey, packLen, normalCntVec[idx], errorCntVec[idx]);
 			Thread thread = new Thread(topicProducer);
@@ -156,8 +158,12 @@ public class MultiWildcardTopicProducer {
 		int proCount = PropertiesUtils.getInstance(confName).getInt("queueCount");
 		int packLen = PropertiesUtils.getInstance(confName).getInt("packLen");
 		int totalTime = PropertiesUtils.getInstance(confName).getInt("totalTime");
+		String mainKey = PropertiesUtils.getInstance(confName).get("queueName");
+		String subKey = PropertiesUtils.getInstance(confName).get("subKey");
+		userName = PropertiesUtils.getInstance(confName).get("userName");
+		userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
 
-		multiWildcardTopicProducerTest(proCount, packLen, totalTime);
+		multiWildcardTopicProducerTest(proCount, packLen, totalTime, mainKey, subKey);
 	}
 
 }

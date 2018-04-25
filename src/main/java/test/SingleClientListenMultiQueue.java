@@ -8,12 +8,15 @@ import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class SingleClientListenMultiQueue {
 	
+	private static String userName;
+	private static String userPwd;
+	
 	private static void testConsumer(String queueNamePrefix, int queueCnt) {
 		if (queueCnt <= 0)
 			return;
 		
 		IMQClient mqClient = new MQClientImpl();
-		mqClient.setAuthInfo("admin", "admin");
+		mqClient.setAuthInfo(userName, userPwd);
 		for (int i = 0; i < queueCnt; i++) {
 			String queueName = String.format("%s%02d", queueNamePrefix, i);
 			
@@ -73,10 +76,12 @@ public class SingleClientListenMultiQueue {
 
 	public static void main(String[] args) {
 		String confName = "test";
-		int queueCnt = 50;
 		String queueNamePrefix = PropertiesUtils.getInstance(confName).get("queueNamePrefix");
+		int queueCount = PropertiesUtils.getInstance(confName).getInt("queueCount");
+		userName = PropertiesUtils.getInstance(confName).get("userName");
+		userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
 		
-		testConsumer(queueNamePrefix, queueCnt);
+		testConsumer(queueNamePrefix, queueCount);
 	}
 
 }

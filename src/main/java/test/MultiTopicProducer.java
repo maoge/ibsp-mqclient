@@ -3,18 +3,20 @@ package test;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.ffcs.mq.client.api.IMQClient;
+import com.ffcs.mq.client.api.MQClientImpl;
 import com.ffcs.mq.client.api.MQMessage;
-import com.ffcs.mq.client.rabbit.RabbitMQNode;
-import com.ffcs.mq.client.router.Broker;
-import com.ffcs.mq.client.router.VBroker;
 import com.ffcs.mq.client.utils.CONSTS;
 import com.ffcs.mq.client.utils.Global;
+import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class MultiTopicProducer {
 
 	private static AtomicLong[] normalCntVec;
 	private static AtomicLong[] errorCntVec;
 	private static AtomicLong maxTPS;
+	private static String userName;
+	private static String userPwd;
 
 	private static class TopicProducer implements Runnable {
 
@@ -39,22 +41,9 @@ public class MultiTopicProducer {
 		@Override
 		public void run() {
 
-			// IMQClient mqClient = new MQClientImpl();
-			//mqClient.setAuthInfo("admin", "admin");
-			// int retConn = mqClient.connect(queueName);
-
-			String userName = "mq";
-			String passwd = "amqp";
-			String vhost = "/";
-			String host = "192.168.14.208";
-			int port = 2344;
-			
-			Broker broker = new Broker("500", "b-500", host, port, userName, passwd, vhost);
-			VBroker vbroker = new VBroker("vbrokerId", "vbrokerName", "500", true);
-			vbroker.addBroker(broker);
-			
-			RabbitMQNode mqClient = new RabbitMQNode(vbroker);
-			int retConn = mqClient.connect();
+			IMQClient mqClient = new MQClientImpl();
+			mqClient.setAuthInfo(userName, userPwd);
+			int retConn = mqClient.connect(queueName);
 
 			if (retConn == CONSTS.REVOKE_OK) {
 				bRunning = true;
@@ -62,13 +51,7 @@ public class MultiTopicProducer {
 				System.out.println(info);
 			} else {
 				bRunning = false;
-				String err = String.format("%s connect %s fail, error:%s.", threadName, queueName, Global.get().getLastError()/*
-																															 * mqClient
-																															 * .
-																															 * GetLastErrorMessage
-																															 * (
-																															 * )
-																															 */);
+				String err = String.format("%s connect %s fail, error:%s.", threadName, queueName, Global.get().getLastError());
 				System.out.println(err);
 			}
 
@@ -90,7 +73,7 @@ public class MultiTopicProducer {
 				message.setMessageID(msgID);
 				message.setTimeStamp(miliTime);
 
-				if (mqClient.sendQueue(queueName, message, true) == CONSTS.REVOKE_OK) {
+				if (mqClient.publishTopic(queueName, message) == CONSTS.REVOKE_OK) {
 					long cnt = normalCnt.incrementAndGet();
 					if (cnt % 20000 == 0) {
 						String info = String.format("%s send message count:%d", threadName, cnt);
@@ -98,15 +81,8 @@ public class MultiTopicProducer {
 					}
 				} else {
 					errorCnt.incrementAndGet();
-
 					String err = String
-							.format("Send message to queue:%s fail, error message:%s", queueName, Global.get().getLastError()/*
-																															 * mqClient
-																															 * .
-																															 * GetLastErrorMessage
-																															 * (
-																															 * )
-																															 */);
+							.format("Send message to queue:%s fail, error message:%s", queueName, Global.get().getLastError());
 					System.out.println(err);
 				}
 			}
@@ -117,7 +93,6 @@ public class MultiTopicProducer {
 			long timeSpend = end - start;
 			System.out.println(threadName + " runs " + timeSpend / 1000 + " seconds, total send message count:" + totalSend
 					+ ", average TPS:" + (totalSend * 1000) / timeSpend);
-
 		}
 
 		public void StopRunning() {
@@ -143,7 +118,7 @@ public class MultiTopicProducer {
 
 		for (; idx < proCount; idx++) {
 			String threadName = String.format("TOPICPRODUCER_%d", idx);
-			String queueName = String.format("%s_%02d", queueNamePrefix, idx);
+			String queueName = String.format("%s%02d", queueNamePrefix, idx);
 
 			TopicProducer topicProducer = new TopicProducer(threadName, queueName, packLen, normalCntVec[idx], errorCntVec[idx]);
 			Thread thread = new Thread(topicProducer);
@@ -177,12 +152,16 @@ public class MultiTopicProducer {
 	}
 
 	public static void main(String[] args) {
-		String queueNamePrefix = "LBTEST";
-		int proCount = 1;
-		int packLen = 128;
-		int totalTime = 300;
+		String confName = "test";
 
-		testMultiProducer(queueNamePrefix, proCount, packLen, totalTime);
+		String queueNamePrefix = PropertiesUtils.getInstance(confName).get("queueNamePrefix");
+		int queueCount = PropertiesUtils.getInstance(confName).getInt("queueCount");
+		int packLen = PropertiesUtils.getInstance(confName).getInt("packLen");
+		int totalTime = PropertiesUtils.getInstance(confName).getInt("totalTime");
+		userName = PropertiesUtils.getInstance(confName).get("userName");
+		userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
+
+		testMultiProducer(queueNamePrefix, queueCount, packLen, totalTime);
 	}
 
 }

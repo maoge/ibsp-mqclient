@@ -10,11 +10,13 @@ public class SingleWildcardTopicProducer {
 
 	public static void main(String[] args) {
 		String confName = "test";
-		String mainKey = PropertiesUtils.getInstance(confName).get("topicName");
+		String mainKey = PropertiesUtils.getInstance(confName).get("queueName");
 		String subKey = PropertiesUtils.getInstance(confName).get("subKey");
+		String userName = PropertiesUtils.getInstance(confName).get("userName");
+		String userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
 
 		IMQClient mqClient = new MQClientImpl();
-		mqClient.setAuthInfo("admin", "admin");
+		mqClient.setAuthInfo(userName, userPwd);
 		int retConn = mqClient.connect(mainKey);
 
 		if (retConn == CONSTS.REVOKE_OK) {

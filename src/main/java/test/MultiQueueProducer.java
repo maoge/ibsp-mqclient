@@ -14,6 +14,8 @@ public class MultiQueueProducer {
 	private static AtomicLong[] normalCntVec;
 	private static AtomicLong[] errorCntVec;
 	private static AtomicLong maxTPS;
+	private static String userName;
+	private static String userPwd;
 
 	private static class TopicProducer implements Runnable {
 
@@ -39,7 +41,7 @@ public class MultiQueueProducer {
 		public void run() {
 			
 			IMQClient mqClient = new MQClientImpl();
-			mqClient.setAuthInfo("admin", "admin");
+			mqClient.setAuthInfo(userName, userPwd);
 			int retConn = mqClient.connect(queueName);
 			if (retConn == CONSTS.REVOKE_OK) {
 				bRunning = true;
@@ -160,6 +162,8 @@ public class MultiQueueProducer {
 		int queueCount = PropertiesUtils.getInstance(confName).getInt("queueCount");
 		int packLen = PropertiesUtils.getInstance(confName).getInt("packLen");
 		int totalTime = PropertiesUtils.getInstance(confName).getInt("totalTime");
+		userName = PropertiesUtils.getInstance(confName).get("userName");
+		userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
 
 		testMultiProducer(queueNamePrefix, queueCount, packLen, totalTime);
 	}

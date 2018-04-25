@@ -16,13 +16,15 @@ public class MultiHttpTest {
 	
 	private static class HttpRunner implements Runnable {
 		
+		private String queueNamePrefix;
 		private String threadName;
 		private volatile boolean bRunning;
 		
 		private AtomicLong normalCnt;
 		private AtomicLong errorCnt;
 		
-		public HttpRunner(String threadName, AtomicLong normalCnt, AtomicLong errorCnt) {
+		public HttpRunner(String queueNamePrefix, String threadName, AtomicLong normalCnt, AtomicLong errorCnt) {
+			this.queueNamePrefix = queueNamePrefix;
 			this.threadName = threadName;
 			this.normalCnt = normalCnt;
 			this.errorCnt = errorCnt;
@@ -36,7 +38,7 @@ public class MultiHttpTest {
 			SVarObject sVar = new SVarObject();
 			
 			while (bRunning) {
-				String queueName = String.format("TT_%02d", i++ % 40); 
+				String queueName = String.format("%s%02d", queueNamePrefix, i++ % 40); 
 				
 				sVar.clear();
 				boolean ret = BasicOperation.loadQueueByName(queueName, sVar);
@@ -64,6 +66,7 @@ public class MultiHttpTest {
 
 	public static void main(String[] args) {
 		String confName = "test";
+		String queueNamePrefix = PropertiesUtils.getInstance(confName).get("queueNamePrefix");
 		int threadCnt = PropertiesUtils.getInstance(confName).getInt("queueCount");
 		int totalTime = PropertiesUtils.getInstance(confName).getInt("totalTime");
 		
@@ -83,7 +86,7 @@ public class MultiHttpTest {
 		
 		for (int idx = 0; idx < threadCnt; idx++) {
 			String threadName = String.format("HTTPRUNNER_%02d", idx);
-			HttpRunner runner = new HttpRunner(threadName, normalCntVec[idx], errorCntVec[idx]);
+			HttpRunner runner = new HttpRunner(queueNamePrefix, threadName, normalCntVec[idx], errorCntVec[idx]);
 			Thread thread = new Thread(runner);
 			thread.start();
 			

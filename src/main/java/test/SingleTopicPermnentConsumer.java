@@ -10,11 +10,13 @@ public class SingleTopicPermnentConsumer {
 
 	public static void main(String[] args) {
 		String confName = "test";
-		String topic = PropertiesUtils.getInstance(confName).get("topicName");
+		String topic = PropertiesUtils.getInstance(confName).get("queueName");
 		String consumerId = PropertiesUtils.getInstance(confName).get("consumerId");
+		String userName = PropertiesUtils.getInstance(confName).get("userName");
+		String userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
 
 		IMQClient mqClient = new MQClientImpl();
-		mqClient.setAuthInfo("admin", "admin");
+		mqClient.setAuthInfo(userName, userPwd);
 		int retConn = mqClient.connect(topic);
 
 		if (retConn == CONSTS.REVOKE_OK) {

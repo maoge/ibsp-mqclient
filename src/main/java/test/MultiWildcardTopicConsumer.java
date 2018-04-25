@@ -14,6 +14,8 @@ public class MultiWildcardTopicConsumer {
 	private static AtomicLong[] normalCntVec;
 	private static AtomicLong[] errorCntVec;
 	private static AtomicLong maxTPS;
+	private static String userName;
+	private static String userPwd;
 
 	private static class WildcardTopicConsumer implements Runnable {
 
@@ -40,7 +42,7 @@ public class MultiWildcardTopicConsumer {
 			boolean needDeleteConsumerID = false;
 
 			IMQClient mqClient = new MQClientImpl();
-			mqClient.setAuthInfo("admin", "admin");
+			mqClient.setAuthInfo(userName, userPwd);
 			int retConn = mqClient.connect(mainKey);
 			if (retConn == CONSTS.REVOKE_OK) {
 				String info = String.format("%s connect success.", threadName);
@@ -116,7 +118,8 @@ public class MultiWildcardTopicConsumer {
 
 	}
 
-	private static void testMultiConsumer(int proCount, int packLen, int totalTime, int consumerCntPerQueue) {
+	private static void testMultiConsumer(int proCount, int packLen, int totalTime, int consumerCntPerQueue,
+			String mainKey, String subKeyPrefix) {
 		normalCntVec = new AtomicLong[proCount * consumerCntPerQueue];
 		errorCntVec = new AtomicLong[proCount * consumerCntPerQueue];
 		for (int i = 0; i < proCount * consumerCntPerQueue; i++) {
@@ -133,8 +136,7 @@ public class MultiWildcardTopicConsumer {
 		long totalDiff = 0;
 
 		for (; idx < proCount; idx++) {
-			String mainKey = "abc.*";
-			String subKey = String.format("%s.%02d", "abc", idx);
+			String subKey = String.format("%s%02d", subKeyPrefix, idx);
 
 			for (int conIdx = 0; conIdx < consumerCntPerQueue; conIdx++) {
 				String threadName = String.format("WILDCARD_TOPIC_CONSUMER_%02d_%02d", idx, conIdx);
@@ -179,8 +181,12 @@ public class MultiWildcardTopicConsumer {
 		int packLen = PropertiesUtils.getInstance(confName).getInt("packLen");
 		int totalTime = PropertiesUtils.getInstance(confName).getInt("totalTime");
 		int consumerCntPerQueue = PropertiesUtils.getInstance(confName).getInt("consumerCntPerQueue");
+		String mainKey = PropertiesUtils.getInstance(confName).get("queueName");
+		String subKey = PropertiesUtils.getInstance(confName).get("subKey");
+		userName = PropertiesUtils.getInstance(confName).get("userName");
+		userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
 
-		testMultiConsumer(proCount, packLen, totalTime, consumerCntPerQueue);
+		testMultiConsumer(proCount, packLen, totalTime, consumerCntPerQueue, mainKey, subKey);
 	}
 
 }

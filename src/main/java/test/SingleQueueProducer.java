@@ -8,25 +8,22 @@ import com.ffcs.mq.client.utils.PropertiesUtils;
 
 public class SingleQueueProducer {
 	
-	private static int QUEUE_COUNT = 1;
+	private static String userName;
+	private static String userPwd;
 
-	private static void testProducer(String queueNamePrefix, int packLen, int totalCnt) {
+	private static void testProducer(String queueName, int packLen, int totalCnt) {
 		
 		IMQClient mqClient = new MQClientImpl();
-		mqClient.setAuthInfo("admin", "admin");
-		for (int i = 0; i < QUEUE_COUNT; i++) {
-			String queueName = String.format("%s%02d", queueNamePrefix, i);
-	
-			int retConn = mqClient.connect(queueName);
-			if (retConn == CONSTS.REVOKE_OK) {
-				String info = String.format("Connect success.");
-				System.out.println(info);
-			} else {
-				String err = String.format("Connect fail, error:%s.", mqClient.GetLastErrorMessage());
-				System.out.println(err);
-				mqClient.close();
-				return;
-			}
+		mqClient.setAuthInfo(userName, userPwd);
+		int retConn = mqClient.connect(queueName);
+		if (retConn == CONSTS.REVOKE_OK) {
+			String info = String.format("Connect success.");
+			System.out.println(info);
+		} else {
+			String err = String.format("Connect fail, error:%s.", mqClient.GetLastErrorMessage());
+			System.out.println(err);
+			mqClient.close();
+			return;
 		}
 
 		byte[] sendBuf = new byte[packLen];
@@ -44,7 +41,6 @@ public class SingleQueueProducer {
 		long lastCnt = 0, currCnt = 0;
 
 		while (currCnt < totalCnt) {
-			String queueName = String.format("%s%02d", queueNamePrefix, currCnt % QUEUE_COUNT);
 			
 			long nanoTime = System.nanoTime();
 			long miliTime = System.currentTimeMillis();
@@ -86,11 +82,13 @@ public class SingleQueueProducer {
 	public static void main(String[] args) {
 		String confName = "test";
 
-		String queueNamePrefix = PropertiesUtils.getInstance(confName).get("queueNamePrefix");
+		String queueName = PropertiesUtils.getInstance(confName).get("queueName");
 		int packLen = PropertiesUtils.getInstance(confName).getInt("packLen");
 		int totalCnt = 100000000;
+		userName = PropertiesUtils.getInstance(confName).get("userName");
+		userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
 
-		testProducer(queueNamePrefix, packLen, totalCnt);
+		testProducer(queueName, packLen, totalCnt);
 
 	}
 
