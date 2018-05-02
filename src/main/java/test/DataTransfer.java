@@ -28,13 +28,11 @@ public class DataTransfer {
 		
 		String srcIP = "134.130.131.245";
 		int srcPort = 9220;
-		int srcMgrPort = 19220;
 		String srcUser = "mq";
 		String srcPwd = "amqp";
 		
 		String desIP = "134.130.131.246";
 		int desPort = 9230;
-		int desMgrPort = 19230;
 		String desUser = "mq";
 		String desPwd = "amqp";
 		

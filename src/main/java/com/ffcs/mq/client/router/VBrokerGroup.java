@@ -493,7 +493,7 @@ public class VBrokerGroup {
 			String subKey = topicName;
 			if (BasicOperation.putPermnentTopic(topicId, consumerId, subKey, sVarPut) == CONSTS.REVOKE_NOK) {
 				Global.get().setLastError(sVarPut.getVal());
-				SVarObject sVarDel = new SVarObject();
+//				SVarObject sVarDel = new SVarObject();
 //				BasicOperation.delPermnentTopic(consumerId, sVarDel);
 				return CONSTS.REVOKE_NOK;
 			} else {
@@ -597,7 +597,7 @@ public class VBrokerGroup {
 			SVarObject sVarPut = new SVarObject();
 			if (BasicOperation.putPermnentTopic(topicId, consumerId, subKey, sVarPut) == CONSTS.REVOKE_NOK) {
 				Global.get().setLastError(sVarPut.getVal());
-				SVarObject sVarDel = new SVarObject();
+//				SVarObject sVarDel = new SVarObject();
 //				BasicOperation.delPermnentTopic(consumerId, sVarDel);
 				return CONSTS.REVOKE_NOK;
 			} else {
@@ -1202,7 +1202,6 @@ public class VBrokerGroup {
 			String erlCookie = subJson.getString(CONSTS.JSON_HEADER_ERL_COOKIE);
 			
 			String sCluster = subJson.getString(CONSTS.JSON_HEADER_CLUSTER);
-			boolean bCluster = sCluster.equals(CONSTS.CLUSTER);
 			
 			String sWritable = subJson.getString(CONSTS.JSON_HEADER_WRITABLE);
 			boolean bWritable = sWritable.equals(CONSTS.WRITABLE);
@@ -1221,7 +1220,6 @@ public class VBrokerGroup {
 			}
 			
 			int port = Integer.valueOf(sPort);
-			int mgrPort = Integer.valueOf(sMgrPort);
 			
 			Broker broker = new Broker(brokerId, brokerName, ip, port, mqUser, mqPwd, vhost);
 			

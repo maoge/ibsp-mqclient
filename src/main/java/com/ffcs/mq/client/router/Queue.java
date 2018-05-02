@@ -1,9 +1,7 @@
 package com.ffcs.mq.client.router;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ffcs.mq.client.utils.CONSTS;
-import com.ffcs.mq.client.utils.StringUtils;
 
 public class Queue {
 
