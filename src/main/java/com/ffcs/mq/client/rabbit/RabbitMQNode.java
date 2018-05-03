@@ -133,7 +133,6 @@ public class RabbitMQNode implements IMQNode {
 		factory.setPort(broker.getPort());
 
 		try {
-//			System.out.println("Reconnect "+broker.getIP()+":"+broker.getPort());
 			conn = factory.newConnection();
 
 			if (conn != null) {
@@ -143,15 +142,14 @@ public class RabbitMQNode implements IMQNode {
 					res = CONSTS.REVOKE_OK;
 				}
 			}
-
-//			System.out.println("Reconnect "+broker.getIP()+":"+broker.getPort()+" success");
+			
+			String info = String.format("Reconnect %s:%d success!", broker.getIP(), broker.getPort());
+			logger.info(info);
 		} catch (Exception e) {
 			// IOException ConnectException TimeoutException
 			String err = String.format("Broker [brokerId=%s, ip=%s, port=%d] connect fail, %s",
 					broker.getBrokerId(), broker.getIP(), broker.getPort(), e.getMessage());
 			logger.error(err, e);
-//			System.out.println("Reconnect "+broker.getIP()+":"+broker.getPort()+" failed");
-//			e.printStackTrace();
 			Global.get().setLastError(e.getMessage());
 		}
 
@@ -1022,6 +1020,11 @@ public class RabbitMQNode implements IMQNode {
 			sendBuilder.messageId(message.getMessageID());
 			sendBuilder.timestamp(message.getTimeStamp());
 			sendBuilder.deliveryMode(isDurable ? CONSTS.DELIVERY_MODE_DURABLE : CONSTS.DELIVERY_MODE_NO_DURABLE);
+			
+			int priority = message.getPriority();
+			if (priority > 0) {
+				sendBuilder.priority(priority > CONSTS.MQ_MAX_QUEUE_PRIORITY ? CONSTS.MQ_MAX_QUEUE_PRIORITY : priority);
+			}
 
 			sendProperties = sendBuilder.build();
 

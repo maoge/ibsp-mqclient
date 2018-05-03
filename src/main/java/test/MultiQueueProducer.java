@@ -23,16 +23,18 @@ public class MultiQueueProducer {
 		private String queueName;
 
 		private int packLen;
+		private int priority;
 
 		private AtomicLong normalCnt;
 		private AtomicLong errorCnt;
 
 		private boolean bRunning;
 
-		public TopicProducer(String threadName, String queueName, int packLen, AtomicLong normalCnt, AtomicLong errorCnt) {
+		public TopicProducer(String threadName, String queueName, int packLen, int priority, AtomicLong normalCnt, AtomicLong errorCnt) {
 			this.threadName = threadName;
 			this.queueName = queueName;
 			this.packLen = packLen;
+			this.priority = priority;
 			this.normalCnt = normalCnt;
 			this.errorCnt = errorCnt;
 		}
@@ -60,6 +62,7 @@ public class MultiQueueProducer {
 
 			MQMessage message = new MQMessage();
 			message.setBody(sendBuf);
+			message.setPriority(priority);
 
 			long start = System.currentTimeMillis();
 
@@ -104,7 +107,7 @@ public class MultiQueueProducer {
 		}
 	}
 
-	private static void testMultiProducer(String queueNamePrefix, int queueCount, int packLen, int totalTime) {
+	private static void testMultiProducer(String queueNamePrefix, int queueCount, int packLen, int totalTime, boolean priority) {
 		normalCntVec = new AtomicLong[queueCount];
 		errorCntVec = new AtomicLong[queueCount];
 		for (int i = 0; i < queueCount; i++) {
@@ -124,7 +127,8 @@ public class MultiQueueProducer {
 			String threadName = String.format("QUEUE_PRODUCER_%02d", idx);
 			String queueName = String.format("%s%02d", queueNamePrefix, idx);
 
-			TopicProducer topicProducer = new TopicProducer(threadName, queueName, packLen, normalCntVec[idx], errorCntVec[idx]);
+			int nPriority = priority ? idx % CONSTS.MQ_MAX_QUEUE_PRIORITY : CONSTS.MQ_DEFAULT_QUEUE_PRIORITY;
+			TopicProducer topicProducer = new TopicProducer(threadName, queueName, packLen, nPriority, normalCntVec[idx], errorCntVec[idx]);
 			Thread thread = new Thread(topicProducer);
 			thread.start();
 
@@ -162,10 +166,11 @@ public class MultiQueueProducer {
 		int queueCount = PropertiesUtils.getInstance(confName).getInt("queueCount");
 		int packLen = PropertiesUtils.getInstance(confName).getInt("packLen");
 		int totalTime = PropertiesUtils.getInstance(confName).getInt("totalTime");
+		boolean priority = PropertiesUtils.getInstance(confName).getBoolean("priority", false);
 		userName = PropertiesUtils.getInstance(confName).get("userName");
 		userPwd = PropertiesUtils.getInstance(confName).get("userPwd");
 
-		testMultiProducer(queueNamePrefix, queueCount, packLen, totalTime);
+		testMultiProducer(queueNamePrefix, queueCount, packLen, totalTime, priority);
 	}
 
 }

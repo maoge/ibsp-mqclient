@@ -45,6 +45,9 @@ public class CONSTS {
 
 	public static final int DELIVERY_MODE_NO_DURABLE = 1;
 	public static final int DELIVERY_MODE_DURABLE = 2;
+	
+	public static final int MQ_MAX_QUEUE_PRIORITY = 10;
+	public static final int MQ_DEFAULT_QUEUE_PRIORITY = 0;
 
 	public static final int RECONNECT_INTERVAL     = 1000;  // 重连间隔
 	public static final int STATISTIC_INTERVAL     = 1000;  // 统计间隔

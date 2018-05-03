@@ -1,6 +1,7 @@
 package com.ffcs.mq.client.api;
 
 import com.ffcs.mq.client.router.IMQNode;
+import com.ffcs.mq.client.utils.CONSTS;
 
 public class MQMessage {
 	// 消息体
@@ -11,6 +12,8 @@ public class MQMessage {
 
 	// 消息时间
 	private long timeStamp;
+	
+	private int priority;
 
 	// 队列类型 1:queue，2:topic
 	private int sourceType;
@@ -53,6 +56,19 @@ public class MQMessage {
 	public void setTimeStamp(long timeStamp) {
 		this.timeStamp = timeStamp;
 	}
+	
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		if (priority < CONSTS.MQ_DEFAULT_QUEUE_PRIORITY)
+			this.priority = CONSTS.MQ_DEFAULT_QUEUE_PRIORITY;
+		else if (priority > CONSTS.MQ_MAX_QUEUE_PRIORITY)
+			this.priority = CONSTS.MQ_MAX_QUEUE_PRIORITY;
+		else
+			this.priority = priority;
+	}
 
 	public int getSourceType() {
 		return sourceType;
@@ -73,6 +89,7 @@ public class MQMessage {
 	public void clear() {
 		timeStamp     = 0L;
 		deliveryTagID = -1L;
+		priority      = 0;
 		body          = null;
 		messageID     = null;
 		sourceType    = -1;
