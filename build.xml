@@ -6,7 +6,7 @@
 	<property file="version.properties" />
 	<property environment="env" />
 	<property name="jdk.home" value="D:/java/jdk1.7.0_67" />
-	<property name="compile.level" value="1.7" />
+	<property name="compile.level" value="1.8" />
 	<property name="src.dir" value="${basedir}/src/main/java" />
 	<property name="resource.dir" value="${basedir}/src/resources" />
 	<property name="build.dir" value="${basedir}/build" />
@@ -57,6 +57,8 @@
 			
 			<manifest>
 				<attribute name="Main-Class" value="" />
+				<attribute name="Manifest-Version" value="${version}"/>
+				<attribute name="Conf-Path" value="conf"/>
 			</manifest>
 		</jar>
 		
