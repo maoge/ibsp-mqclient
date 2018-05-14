@@ -68,6 +68,8 @@ public class CONSTS {
 	public static final String NOT_ORDERED = "0";
 	public static final String NOT_GLOBAL_ORDERED = "0";
 	public static final String GLOBAL_ORDERED = "1";
+	public static final String PRIORITY = "1";
+	public static final String NOT_PRIORITY = "0";
 	public static final String DEPLOYED = "1";
 	public static final String NOT_DEPLOYED = "0";
 	public static final String CLUSTER = "1";
@@ -144,6 +146,7 @@ public class CONSTS {
 	public static final String PARAM_QUEUENAME = "QUEUE_NAME";
 	public static final String PARAM_QUEUETYPE = "QUEUE_TYPE";
 	public static final String PARAM_DURABLE = "IS_DURABLE";
+	public static final String PARAM_PRIORITY = "IS_PRIORITY";
 	public static final String PARAM_ORDERED = "GLOBAL_ORDERED";
 	public static final String PARAM_GROUPID = "GROUP_ID";
 	public static final String PARAM_SERVID = "SERV_ID";

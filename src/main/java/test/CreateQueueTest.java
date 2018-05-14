@@ -19,7 +19,7 @@ public class CreateQueueTest {
 		mqClient.setAuthInfo(userName, userPwd);
 		for (int i = 0; i < queueCount; i++) {
 			String queueName = String.format("%s%02d", queueNamePrefix, i);
-			int resDec = mqClient.queueDeclare(queueName, true, groupId, qType);
+			int resDec = mqClient.queueDeclare(queueName, false, false, true, groupId, qType);
 			if (resDec != 0) {
 				String err = String.format("%s create fail! error:%s", queueName, mqClient.GetLastErrorMessage());
 				System.out.println(err);

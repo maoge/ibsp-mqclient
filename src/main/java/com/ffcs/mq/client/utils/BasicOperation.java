@@ -168,7 +168,7 @@ public class BasicOperation {
 	 *            out "return http respond json string"
 	 * @return 0:ok; -1:nok; -2:nok queue exists
 	 */
-	public static int queueDeclare(String queueName, boolean durable, boolean ordered, String groupId, String type, SVarObject sVar) {
+	public static int queueDeclare(String queueName, boolean durable, boolean ordered, boolean priority, String groupId, String type, SVarObject sVar) {
 		int ret = CONSTS.REVOKE_NOK;
 
 		if (StringUtils.isNullOrEmtpy(queueName)) {
@@ -189,6 +189,7 @@ public class BasicOperation {
 				CONSTS.PARAM_QUEUETYPE, type,
 				CONSTS.PARAM_DURABLE, durable ? CONSTS.DURABLE : CONSTS.NOT_DURABLE,
 				CONSTS.PARAM_ORDERED, ordered ? CONSTS.GLOBAL_ORDERED : CONSTS.NOT_GLOBAL_ORDERED,
+				CONSTS.PARAM_PRIORITY, priority ? CONSTS.PRIORITY : CONSTS.NOT_PRIORITY,
 				CONSTS.PARAM_SERVID, groupId,
 				CONSTS.PARAM_MAGIC_KEY, Global.get().getMagicKey());
 		

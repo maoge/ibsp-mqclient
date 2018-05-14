@@ -69,12 +69,17 @@ public class MQClientImpl implements IMQClient {
 
 	@Override
 	public int queueDeclare(String queueName, boolean durable, String groupId, int type) {
-		return router.queueDeclare(queueName, durable, false, groupId, type);
+		return router.queueDeclare(queueName, durable, false, false, groupId, type);
 	}
 	
 	@Override
 	public int queueDeclare(String queueName, boolean durable, boolean ordered, String groupId, int type) {
-		return router.queueDeclare(queueName, durable, ordered, groupId, type);
+		return router.queueDeclare(queueName, durable, ordered, false, groupId, type);
+	}
+	
+	@Override
+	public int queueDeclare(String queueName, boolean durable, boolean ordered, boolean priority, String groupId, int type) {
+		return router.queueDeclare(queueName, durable, ordered, priority, groupId, type);
 	}
 
 	@Override

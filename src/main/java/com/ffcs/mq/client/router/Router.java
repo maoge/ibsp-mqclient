@@ -302,7 +302,21 @@ public class Router {
 
 		SVarObject sVar = new SVarObject();
 		String sType = type == CONSTS.TYPE_QUEUE ? "1" : "2";
-		res = BasicOperation.queueDeclare(queueName, durable, ordered, groupId, sType, sVar);
+		res = BasicOperation.queueDeclare(queueName, durable, ordered, false, groupId, sType, sVar);
+		if (res != CONSTS.REVOKE_OK) {
+			logger.error(sVar.getVal());
+			Global.get().setLastError(sVar.getVal());
+		}
+
+		return res;
+	}
+	
+	public int queueDeclare(String queueName, boolean durable, boolean ordered, boolean priority, String groupId, int type) {
+		int res = CONSTS.REVOKE_NOK;
+
+		SVarObject sVar = new SVarObject();
+		String sType = type == CONSTS.TYPE_QUEUE ? "1" : "2";
+		res = BasicOperation.queueDeclare(queueName, durable, ordered, priority, groupId, sType, sVar);
 		if (res != CONSTS.REVOKE_OK) {
 			logger.error(sVar.getVal());
 			Global.get().setLastError(sVar.getVal());

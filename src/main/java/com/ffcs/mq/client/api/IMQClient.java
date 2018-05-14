@@ -57,6 +57,20 @@ public interface IMQClient {
 	 * @return 0:success !0:error
 	 */
 	public int queueDeclare(String queueName, boolean durable, boolean ordered, String groupId, int type);
+	
+	/**
+	 * 方法说明：创建名称为queueName的队列，durable是否要求消息持久化， ordered是否要求全局有序，
+	 *         priority是否优先级队列, groupId指定创建在哪个组上，
+	 *         type 1:queue,2:topic
+	 * 
+	 * @param queueName
+	 * @param durable
+	 * @param ordered
+	 * @param groupId
+	 * @param type
+	 * @return 0:success !0:error
+	 */
+	public int queueDeclare(String queueName, boolean durable, boolean ordered, boolean priority, String groupId, int type);
 
 	/**
 	 * 方法说明：删除名称为queueName队列
