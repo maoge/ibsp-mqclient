@@ -479,21 +479,21 @@ public class Global {
 						lastUrlChkTS = currTS;
 					}
 					
-					for (Router router : routerMap.values()) {
-						if (currTS - router.getLastWriteTime() > SysConfig.get().getMqWriteTimeout()) {
-							try {
-								VBroker vbroker = router.getCurrentVBroker();
-								if (vbroker.forceClose()==CONSTS.REVOKE_OK) {
-									logger.warn("RabbitMQ client write timeout, close send channel by force, VBrokerID: ", vbroker.getVBrokerId());
-									router.setLastWriteTime(Long.MAX_VALUE);
-								} else {
-									logger.warn("RabbitMQ client write timeout, failed to close send channel...");
-								}
-							} catch (Exception e) {
-								logger.warn("RabbitMQ client write timeout, failed to close send channel...", e);
-							}
-						}
-					}
+//					for (Router router : routerMap.values()) {
+//						if (currTS - router.getLastWriteTime() > SysConfig.get().getMqWriteTimeout()) {
+//							try {
+//								VBroker vbroker = router.getCurrentVBroker();
+//								if (vbroker.forceClose()==CONSTS.REVOKE_OK) {
+//									logger.warn("RabbitMQ client write timeout, close send channel by force, VBrokerID: ", vbroker.getVBrokerId());
+//									router.setLastWriteTime(Long.MAX_VALUE);
+//								} else {
+//									logger.warn("RabbitMQ client write timeout, failed to close send channel...");
+//								}
+//							} catch (Exception e) {
+//								logger.warn("RabbitMQ client write timeout, failed to close send channel...", e);
+//							}
+//						}
+//					}
 				} catch(Exception e) {
 					logger.error(e.getMessage(), e);
 				}
