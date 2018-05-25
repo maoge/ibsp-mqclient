@@ -103,9 +103,9 @@ public class CONSTS {
 	public static final boolean AMQ_IMMEDIATE = false;
 
 	public static final String CONF_PATH = "conf";
-	public static final String MQ_PROP_FILE = "mq";
+	public static final String MQ_PROP_FILE = "ibsp";
 	public static final String MQ_CONF_TYPE = "mq.type";
-	public static final String MQ_CONF_ROOTURL = "mq.configsvr.rooturl";
+	public static final String MQ_CONF_ROOTURL = "metasvr.rooturl";
 	public static final String MQ_CONF_ZKLOKER_SUPPORT = "mq.zklocker.support";
 	public static final String MQ_CONF_ZK = "mq.zookeeper.rooturl";
 	public static final String MQ_CONF_PUBCONFIRM = "mq.publish.confirm";
@@ -113,7 +113,7 @@ public class CONSTS {
 	public static final String MQ_CONF_MULTIPLEXING_RATIO = "mq.router.multiplexing.ratio";
 	public static final String MQ_CONF_WRITE_TIMEOUT = "mq.write.timeout";
 	public static final String MQ_TYPE_RABBITMQ = "rabbitmq";
-	public static final String DEBUG = "debug";
+	public static final String MQ_DEBUG = "mq.debug";
 	public static final String MQ_USERID  = "mq.userid";
 	public static final String MQ_USERPWD = "mq.userpwd";
 

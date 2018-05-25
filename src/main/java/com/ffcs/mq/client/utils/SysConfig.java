@@ -40,7 +40,7 @@ public class SysConfig {
 		this.mq_prefetch_size = PropertiesUtils.getInstance(CONSTS.MQ_PROP_FILE).getInt(CONSTS.MQ_CONF_PRETETCHSIZE, CONSTS.PREFETCH_COUNT);
 		this.mq_router_multiplexing_ratio = PropertiesUtils.getInstance(CONSTS.MQ_PROP_FILE).getInt(CONSTS.MQ_CONF_MULTIPLEXING_RATIO, CONSTS.MULTIPLEXING_RATIO);
 		this.mq_write_timeout = PropertiesUtils.getInstance(CONSTS.MQ_PROP_FILE).getLong(CONSTS.MQ_CONF_WRITE_TIMEOUT, CONSTS.WRITE_TIMEOUT);
-		this.debug = PropertiesUtils.getInstance(CONSTS.MQ_PROP_FILE).getBoolean(CONSTS.DEBUG, false);
+		this.debug = PropertiesUtils.getInstance(CONSTS.MQ_PROP_FILE).getBoolean(CONSTS.MQ_DEBUG, false);
 		this.mq_userid = PropertiesUtils.getInstance(CONSTS.MQ_PROP_FILE).get(CONSTS.MQ_USERID, "");
 		this.mq_userpwd = PropertiesUtils.getInstance(CONSTS.MQ_PROP_FILE).get(CONSTS.MQ_USERPWD, "");
 	}
