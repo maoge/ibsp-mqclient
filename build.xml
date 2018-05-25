@@ -22,7 +22,7 @@
 		<antcall target="init" />
 		<antcall target="build" />
 		<antcall target="jar" />
-		<antcall target="zkm" />
+		<!--antcall target="zkm" /-->
 	</target>
 
 	<path id="project.classpath">
@@ -103,9 +103,11 @@
 			      ;
 			open "${build.out.dir}/${jar.name}"
 		</echo>
+		<!--
 		<concat destfile="${zkm.script}" append="true">
 			<fileset dir="." file="zkm_script.txt"/>
 		</concat>
+		-->
 		<!-- 构建完成 -->
 		<echo message="${jdk.home}/lib/tools.jar"/>
 		<java jar="${zkm.dir}/ZKM.jar" fork="true">
