@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.Set;
 
@@ -1105,17 +1106,7 @@ public class Router {
 		}
 		
 		if (res == 0) {
-			if (sleepCnt++ % CONSTS.CONSUME_BATCH_SLEEP_CNT == 0) {
-				try {
-					Thread.sleep(timeout <= 0 ? CONSTS.SLEEP_WHEN_NODATA : timeout);
-				} catch (InterruptedException e) {
-					logger.error(e.getMessage(), e);
-				}
-				
-				if (sleepCnt < 0) {
-					sleepCnt = 0L;
-				}
-			}
+			consumeSleepWhenNoData(timeout);
 		}
 
 		return res;
@@ -1140,17 +1131,7 @@ public class Router {
 		}
 
 		if (res == 0) {
-			if (sleepCnt++ % CONSTS.CONSUME_BATCH_SLEEP_CNT == 0) {
-				try {
-					Thread.sleep(timeout <= 0 ? CONSTS.SLEEP_WHEN_NODATA : timeout);
-				} catch (InterruptedException e) {
-					logger.error(e.getMessage(), e);
-				}
-				
-				if (sleepCnt < 0) {
-					sleepCnt = 0L;
-				}
-			}
+			consumeSleepWhenNoData(timeout);
 		}
 		
 		return res;
@@ -1509,6 +1490,18 @@ public class Router {
 		}
 		
 		return ret;
+	}
+	
+	private void consumeSleepWhenNoData(int timeout) {
+		if (sleepCnt++ % CONSTS.CONSUME_BATCH_SLEEP_CNT == 0) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(timeout <= 0 ? CONSTS.SLEEP_WHEN_NODATA : timeout);
+			} catch (InterruptedException e) {
+				logger.error(e.getMessage(), e);
+			}				
+			
+			sleepCnt = 0L;
+		}
 	}
 
 }

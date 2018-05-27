@@ -32,7 +32,7 @@ public class CONSTS {
 	public static final long WRITE_TIMEOUT = 3000L;
 
 	public static final long REPLY_TIMEOUT = 3000L;
-	public static final long SLEEP_WHEN_NODATA = 1L;
+	public static final long SLEEP_WHEN_NODATA = 50L;
 	public static final int CONSUME_BATCH_SLEEP_CNT = 800;
 
 	public static final int BASE_PORT = 9500;

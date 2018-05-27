@@ -71,7 +71,7 @@ public class MultiQueueConsumer {
 
 			long start = System.currentTimeMillis();
 			while (bRunning) {
-				int res = mqClient.consumeMessage(queueName, message, 10);
+				int res = mqClient.consumeMessage(queueName, message, 50);
 				if (res == 1) {
 					if (mqClient.ackMessage(message) == CONSTS.REVOKE_OK) {
 						long cnt = normalCnt.incrementAndGet();
