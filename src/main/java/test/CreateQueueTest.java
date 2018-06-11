@@ -1,8 +1,8 @@
 package test;
 
-import com.ffcs.mq.client.api.IMQClient;
-import com.ffcs.mq.client.api.MQClientImpl;
-import com.ffcs.mq.client.utils.PropertiesUtils;
+import ibsp.mq.client.api.IMQClient;
+import ibsp.mq.client.api.MQClientImpl;
+import ibsp.mq.client.utils.PropertiesUtils;
 
 public class CreateQueueTest {
 	

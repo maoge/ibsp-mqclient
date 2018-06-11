@@ -3,11 +3,11 @@ package test;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.ffcs.mq.client.api.IMQClient;
-import com.ffcs.mq.client.api.MQClientImpl;
-import com.ffcs.mq.client.api.MQMessage;
-import com.ffcs.mq.client.utils.CONSTS;
-import com.ffcs.mq.client.utils.PropertiesUtils;
+import ibsp.mq.client.api.IMQClient;
+import ibsp.mq.client.api.MQClientImpl;
+import ibsp.mq.client.api.MQMessage;
+import ibsp.mq.client.utils.CONSTS;
+import ibsp.mq.client.utils.PropertiesUtils;
 
 public class MultiQueueConsumer {
 

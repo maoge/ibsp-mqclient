@@ -1,7 +1,7 @@
 package test;
 
-import com.ffcs.mq.client.exception.ZKLockException;
-import com.ffcs.mq.client.utils.ZKLocker;
+import ibsp.mq.client.exception.ZKLockException;
+import ibsp.mq.client.utils.ZKLocker;
 
 public class ZKLockerTest {
 

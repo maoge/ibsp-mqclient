@@ -3,10 +3,10 @@ package test;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.ffcs.mq.client.utils.BasicOperation;
-import com.ffcs.mq.client.utils.Global;
-import com.ffcs.mq.client.utils.PropertiesUtils;
-import com.ffcs.mq.client.utils.SVarObject;
+import ibsp.mq.client.utils.BasicOperation;
+import ibsp.mq.client.utils.Global;
+import ibsp.mq.client.utils.PropertiesUtils;
+import ibsp.mq.client.utils.SVarObject;
 
 public class MultiHttpTest {
 	
