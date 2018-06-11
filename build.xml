@@ -52,7 +52,7 @@
 		<jar jarfile="${output.dir}/${jar.name}">
 			<fileset dir="${build.dir}">
 				<include name="*"/>
-				<include name="com/ffcs/mq/**"/>
+				<include name="ibsp/mq/**"/>
 			</fileset>
 			
 			<manifest>
