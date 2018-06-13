@@ -2,11 +2,11 @@ package test;
 
 import java.util.ArrayList;
 
+import ibsp.common.utils.CONSTS;
 import ibsp.mq.client.api.MQMessage;
 import ibsp.mq.client.rabbit.RabbitMQNode;
 import ibsp.mq.client.router.Broker;
 import ibsp.mq.client.router.VBroker;
-import ibsp.mq.client.utils.CONSTS;
 
 public class DataTransfer {
 	

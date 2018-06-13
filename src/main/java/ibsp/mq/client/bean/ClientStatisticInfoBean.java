@@ -2,8 +2,8 @@ package ibsp.mq.client.bean;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import ibsp.common.utils.CONSTS;
 import ibsp.mq.client.api.MQMessage;
-import ibsp.mq.client.utils.CONSTS;
 
 public class ClientStatisticInfoBean {
 

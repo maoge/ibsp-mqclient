@@ -3,7 +3,7 @@ package ibsp.mq.client.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ibsp.mq.client.utils.CONSTS;
+import ibsp.common.utils.CONSTS;
 import ibsp.mq.client.utils.Global;
 import com.ffcs.nio.core.buffer.IoBuffer;
 import com.ffcs.nio.core.core.impl.HandlerAdapter;

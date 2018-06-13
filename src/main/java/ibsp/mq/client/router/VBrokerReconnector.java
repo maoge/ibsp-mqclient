@@ -13,8 +13,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ibsp.common.utils.CONSTS;
 import ibsp.mq.client.bean.QueueDtlBean;
-import ibsp.mq.client.utils.CONSTS;
 
 public class VBrokerReconnector {
 	

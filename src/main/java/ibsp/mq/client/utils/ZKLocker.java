@@ -15,6 +15,8 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ibsp.common.utils.CONSTS;
+import ibsp.common.utils.IBSPConfig;
 import ibsp.mq.client.exception.ZKLockException;
 
 public class ZKLocker {
@@ -31,7 +33,7 @@ public class ZKLocker {
 	}
 	
 	public void init() {
-		curator = CuratorFrameworkFactory.newClient(SysConfig.get().getMqZKRootUrl(),
+		curator = CuratorFrameworkFactory.newClient(IBSPConfig.getInstance().getMqZKRootUrl(),
 				CONSTS.ZK_SESSION_TIMEOUT, CONSTS.ZK_CONN_TIMEOUT,
 				new RetryNTimes(CONSTS.ZK_CONN_RETRY, CONSTS.ZK_CONN_RETRY_INTERVAL));
 		curator.start();

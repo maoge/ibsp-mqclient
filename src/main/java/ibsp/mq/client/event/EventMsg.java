@@ -11,8 +11,9 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import ibsp.mq.client.utils.CONSTS;
-import ibsp.mq.client.utils.StringUtils;
+
+import ibsp.common.utils.CONSTS;
+import ibsp.common.utils.StringUtils;
 
 public class EventMsg {
 

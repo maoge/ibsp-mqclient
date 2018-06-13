@@ -1,10 +1,10 @@
 package test;
 
+import ibsp.common.utils.CONSTS;
+import ibsp.common.utils.PropertiesUtils;
 import ibsp.mq.client.api.IMQClient;
 import ibsp.mq.client.api.MQClientImpl;
 import ibsp.mq.client.api.MQMessage;
-import ibsp.mq.client.utils.CONSTS;
-import ibsp.mq.client.utils.PropertiesUtils;
 
 public class SingleQueueProducer {
 	

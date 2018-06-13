@@ -2,8 +2,9 @@ package ibsp.mq.client.rabbit;
 
 import java.io.IOException;
 
-import ibsp.mq.client.utils.BlockingLock;
 import com.rabbitmq.client.ConfirmListener;
+
+import ibsp.common.utils.BlockingLock;
 
 public class RabbitConfirmListener implements ConfirmListener {
 

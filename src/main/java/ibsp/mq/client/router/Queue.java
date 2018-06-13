@@ -1,7 +1,8 @@
 package ibsp.mq.client.router;
 
 import com.alibaba.fastjson.JSONObject;
-import ibsp.mq.client.utils.CONSTS;
+
+import ibsp.common.utils.CONSTS;
 
 public class Queue {
 

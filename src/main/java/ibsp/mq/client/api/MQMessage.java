@@ -1,7 +1,7 @@
 package ibsp.mq.client.api;
 
+import ibsp.common.utils.CONSTS;
 import ibsp.mq.client.router.IMQNode;
-import ibsp.mq.client.utils.CONSTS;
 
 public class MQMessage {
 	// 消息体

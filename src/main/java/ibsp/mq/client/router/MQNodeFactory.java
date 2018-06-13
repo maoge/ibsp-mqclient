@@ -1,7 +1,7 @@
 package ibsp.mq.client.router;
 
+import ibsp.common.utils.CONSTS;
 import ibsp.mq.client.rabbit.RabbitMQNode;
-import ibsp.mq.client.utils.CONSTS;
 
 public class MQNodeFactory {
 

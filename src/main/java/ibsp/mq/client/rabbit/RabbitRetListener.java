@@ -2,9 +2,10 @@ package ibsp.mq.client.rabbit;
 
 import java.io.IOException;
 
-import ibsp.mq.client.utils.BlockingLock;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.ReturnListener;
+
+import ibsp.common.utils.BlockingLock;
 
 public class RabbitRetListener implements ReturnListener {
 

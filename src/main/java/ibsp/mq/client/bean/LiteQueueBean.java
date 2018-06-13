@@ -1,6 +1,6 @@
 package ibsp.mq.client.bean;
 
-import ibsp.mq.client.utils.CONSTS;
+import ibsp.common.utils.CONSTS;
 
 public class LiteQueueBean {
 	

@@ -12,18 +12,18 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ibsp.common.utils.BlockingLock;
+import ibsp.common.utils.CONSTS;
+import ibsp.common.utils.IBSPConfig;
+import ibsp.common.utils.SRandomGenerator;
+import ibsp.common.utils.SVarObject;
+import ibsp.common.utils.StringUtils;
 import ibsp.mq.client.api.MQMessage;
 import ibsp.mq.client.bean.QueueDtlBean;
 import ibsp.mq.client.router.Broker;
 import ibsp.mq.client.router.IMQNode;
 import ibsp.mq.client.router.VBroker;
-import ibsp.mq.client.utils.BlockingLock;
-import ibsp.mq.client.utils.CONSTS;
 import ibsp.mq.client.utils.Global;
-import ibsp.mq.client.utils.SRandomGenerator;
-import ibsp.mq.client.utils.SVarObject;
-import ibsp.mq.client.utils.StringUtils;
-import ibsp.mq.client.utils.SysConfig;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.AMQP.Queue;
@@ -65,6 +65,8 @@ public class RabbitMQNode implements IMQNode {
 	boolean isLsnr = false;
 	boolean isCmdChInited = false;
 	boolean isSendChInited = false;
+	
+	private static boolean isPubConfig = IBSPConfig.getInstance().MqIsPubConfirm();
 
 	public RabbitMQNode() {
 		usedChannel = new HashSet<Integer>();
@@ -206,7 +208,7 @@ public class RabbitMQNode implements IMQNode {
 			try {
 				sendChannel = conn.createChannel(CONSTS.CHANNEL_SEND);
 
-				if (SysConfig.get().isPubConfirm()) {
+				if (isPubConfig) {
 					sendChannel.confirmSelect();
 
 					retLock = new BlockingLock<Integer>();
@@ -1030,7 +1032,7 @@ public class RabbitMQNode implements IMQNode {
 
 			sendChannel.basicPublish("", queueName, CONSTS.AMQ_MANDATORY, CONSTS.AMQ_IMMEDIATE, sendProperties, message.getBody());
 			
-			if (SysConfig.get().isPubConfirm()) {
+			if (isPubConfig) {
 				try {
 					boolean confirmOk = sendChannel.waitForConfirms();
 					if (confirmOk) {
@@ -1106,7 +1108,7 @@ public class RabbitMQNode implements IMQNode {
 			sendChannel.basicPublish(CONSTS.AMQ_DIRECT, topicName, CONSTS.AMQ_MANDATORY, CONSTS.AMQ_IMMEDIATE, sendProperties,
 					message.getBody());
 
-			if (SysConfig.get().isPubConfirm()) {
+			if (isPubConfig) {
 				try {
 					boolean confirmOk = sendChannel.waitForConfirms();
 					if (confirmOk) {

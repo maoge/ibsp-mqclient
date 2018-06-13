@@ -11,8 +11,14 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ibsp.common.utils.BasicOperation;
+import ibsp.common.utils.CONSTS;
+import ibsp.common.utils.IBSPConfig;
+import ibsp.common.utils.IVarObject;
+import ibsp.common.utils.MetasvrUrlConfig;
+import ibsp.common.utils.SVarObject;
+import ibsp.common.utils.StringUtils;
 import ibsp.mq.client.api.MQClientImpl;
-import ibsp.mq.client.bean.RootUrlBean;
 import ibsp.mq.client.event.EventMsg;
 import ibsp.mq.client.event.EventSockListener;
 import ibsp.mq.client.exception.ZKLockException;
@@ -22,11 +28,8 @@ public class Global {
 	
 	private static Logger logger = LoggerFactory.getLogger(Global.class);
 
-	private RootUrlBean urls;
 	private SVarObject globalErrObj;
 	private int qos;
-	private boolean isAuthed;
-	private String magicKey;
 	
 	private volatile boolean isLsnrInited;          // 本机监听是否完成初始化
 	private String lsnrIP;                          // 本机和管理平台交互的ip
@@ -57,12 +60,7 @@ public class Global {
 	public Global() {
 		lock = new ReentrantLock();
 		
-		urls         = new RootUrlBean();
-		qos          = SysConfig.get().getMqPrefetchSize();
-//		isAuthed     = false;
-		//TODO 用户名密码认证还没有做
-		isAuthed     = true;
-		magicKey     = "";
+		qos          = IBSPConfig.getInstance().getMqPrefetchSize();
 		globalErrObj = new SVarObject();
 		
 		routerMap    = new ConcurrentHashMap<String, Router>();
@@ -154,7 +152,7 @@ public class Global {
 		try {
 			lock.lock();
 			boolean needCreate = currAllocRouter == null
-					|| (currAllocRouter != null && currAllocRouter.getBindSize() >= SysConfig.get().getMqMultiplexingRatio());
+					|| (currAllocRouter != null && currAllocRouter.getBindSize() >= IBSPConfig.getInstance().getMqMultiplexingRatio());
 			
 			if (needCreate) {
 				currAllocRouter = new Router();
@@ -202,7 +200,7 @@ public class Global {
 	}
 	
 	private void initListener() {
-		if (SysConfig.get().isDebug())
+		if (IBSPConfig.getInstance().MqIsDebug())
 			return;
 		
 		initLsnrIP();
@@ -245,7 +243,7 @@ public class Global {
 	}
 	
 	private void initZKLocker() {
-		if (SysConfig.get().isMqZKLockerSupport()) {
+		if (IBSPConfig.getInstance().MqIsMqZKLockerSupport()) {
 			zklocker = new ZKLocker();
 			zklocker.init();
 		}
@@ -290,24 +288,14 @@ public class Global {
 	}
 
 	private void initRootUrl() {
-		String rootUrls = SysConfig.get().getMqConfRootUrl();
+		String rootUrls = IBSPConfig.getInstance().getMetasvrUrl();
 		if (!StringUtils.isNullOrEmtpy(rootUrls)) {
-			String[] arr = rootUrls.split(CONSTS.COMMA);
-
-			for (String s : arr) {
-				String url = String.format("%s://%s", CONSTS.HTTP_PROTOCAL, s.trim());
-				
-				if (BasicOperation.checkUrl(url) == CONSTS.REVOKE_OK) {
-					urls.putValidUrl(url);
-				} else {
-					urls.putInvalidUrl(url);
-				}
-			}
+			MetasvrUrlConfig.init(rootUrls);
 		}
 	}
 	
 	public boolean orderedQueueLock(String nodeName) {
-		if (!SysConfig.get().isMqZKLockerSupport()) {
+		if (!IBSPConfig.getInstance().MqIsMqZKLockerSupport()) {
 			String err = String.format("mq.zklocker.support is not true!", nodeName);
 			setLastError(err);
 			logger.error(err);
@@ -355,31 +343,6 @@ public class Global {
 		return unlocked;
 	}
 
-	public String getNextUrl() {
-		String result = null;
-		int retry = 0;
-		while (result == null && retry++ < CONSTS.RETRY_CNT) {
-			try {
-				result = urls.getNextUrl();
-				if (result == null) {
-					Thread.sleep(CONSTS.RECONNECT_INTERVAL);
-				}
-			} catch (InterruptedException e) {
-				logger.error(e.getMessage(), e);
-			}
-		}
-		
-		if (result == null) {
-			logger.error("Global getNextUrl result null!");
-		}
-		
-		return result;
-	}
-	
-	public void putBrokenUrl(String url) {
-		urls.putBrokenUrl(url);
-	}
-	
 	public int getQos() {
 		return qos;
 	}
@@ -388,27 +351,6 @@ public class Global {
 		this.qos = qos;
 	}
 	
-	public void clearAuth() {
-		isAuthed = false;
-		magicKey = "";
-	}
-	
-	public boolean isAuthed() {
-		return isAuthed;
-	}
-
-	public void setAuthed(boolean isAuthed) {
-		this.isAuthed = isAuthed;
-	}
-	
-	public String getMagicKey() {
-		return magicKey;
-	}
-
-	public void setMagicKey(String magicKey) {
-		this.magicKey = magicKey;
-	}
-
 	public void setLastError(String err) {
 		globalErrObj.setVal(err);
 	}
@@ -438,14 +380,12 @@ public class Global {
 		private volatile boolean bRunning;
 		private long lastComputeTS;
 		private long lastReportTS;
-		private long lastUrlChkTS;
 		private long currTS;
 		
 		public TimerEventRunner() {
 			currTS = System.currentTimeMillis();
 			lastComputeTS = currTS;
 			lastReportTS  = currTS;
-			lastUrlChkTS  = currTS;
 		}
 		
 		@Override
@@ -471,11 +411,6 @@ public class Global {
 					if ((currTS - lastReportTS) > CONSTS.REPORT_INTERVAL) {
 						doReport();
 						lastReportTS = currTS;
-					}
-					
-					if ((currTS - lastUrlChkTS) > CONSTS.RECONNECT_INTERVAL) {
-						doUrlCheck();
-						lastUrlChkTS = currTS;
 					}
 					
 //					for (Router router : routerMap.values()) {
@@ -526,11 +461,7 @@ public class Global {
 				router.doReport();
 			}
 		}
-		
-		private void doUrlCheck() {
-			urls.doUrlCheck();
-		}
-		
+
 	}
 
 }

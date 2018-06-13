@@ -1,11 +1,11 @@
 package ibsp.mq.client.api;
 
+import ibsp.common.utils.CONSTS;
+import ibsp.common.utils.IBSPConfig;
+import ibsp.common.utils.SRandomGenerator;
+import ibsp.common.utils.StringUtils;
 import ibsp.mq.client.router.Router;
-import ibsp.mq.client.utils.CONSTS;
 import ibsp.mq.client.utils.Global;
-import ibsp.mq.client.utils.SRandomGenerator;
-import ibsp.mq.client.utils.StringUtils;
-import ibsp.mq.client.utils.SysConfig;
 
 /*
  * clients multiplex router inorder to reduce connection to broker.
@@ -37,8 +37,8 @@ public class MQClientImpl implements IMQClient {
 			return;
 		}
 		
-		SysConfig.get().setMqUserId(userId);
-		SysConfig.get().setMqUserPwd(userPwd);
+		IBSPConfig.getInstance().setMetaSvrUserId(userId);
+		IBSPConfig.getInstance().setMetaSvrUserPwd(userPwd);
 	}
 
 	@Override

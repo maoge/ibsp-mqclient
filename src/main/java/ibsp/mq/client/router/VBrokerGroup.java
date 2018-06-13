@@ -15,14 +15,15 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
+import ibsp.common.utils.BasicOperation;
+import ibsp.common.utils.CONSTS;
+import ibsp.common.utils.LVarObject;
+import ibsp.common.utils.SVarObject;
+import ibsp.common.utils.StringUtils;
 import ibsp.mq.client.api.MQMessage;
 import ibsp.mq.client.bean.QueueDtlBean;
-import ibsp.mq.client.utils.BasicOperation;
-import ibsp.mq.client.utils.CONSTS;
 import ibsp.mq.client.utils.Global;
-import ibsp.mq.client.utils.LVarObject;
-import ibsp.mq.client.utils.SVarObject;
-import ibsp.mq.client.utils.StringUtils;
 
 public class VBrokerGroup {
 

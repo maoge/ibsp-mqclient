@@ -10,14 +10,14 @@ import java.util.Vector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ibsp.common.utils.CONSTS;
+import ibsp.common.utils.IBSPConfig;
+import ibsp.common.utils.StringUtils;
 import ibsp.mq.client.api.MQMessage;
 import ibsp.mq.client.bean.ClientStatisticInfoBean;
 import ibsp.mq.client.bean.QueueDtlBean;
 import ibsp.mq.client.rabbit.RabbitMQNode;
-import ibsp.mq.client.utils.CONSTS;
 import ibsp.mq.client.utils.Global;
-import ibsp.mq.client.utils.StringUtils;
-import ibsp.mq.client.utils.SysConfig;
 
 public class VBroker {
 
@@ -60,7 +60,7 @@ public class VBroker {
 		
 		this(vbrokerId, vbrokerName, masterId, isWritable);
 		
-		String type = SysConfig.get().getMqType();
+		String type = IBSPConfig.getInstance().getMqType();
 		if (type.equals(CONSTS.MQ_TYPE_RABBITMQ)) {
 			mqNode = new RabbitMQNode(lsnrMap, this);
 		}
@@ -70,7 +70,7 @@ public class VBroker {
 		int res = CONSTS.REVOKE_NOK;
 
 		if (mqNode == null) {
-			mqNode = new MQNodeFactory().createMQNode(SysConfig.get().getMqType());
+			mqNode = new MQNodeFactory().createMQNode(IBSPConfig.getInstance().getMqType());
 			mqNode.setVBrokerInfo(this);
 
 			res = mqNode.connect();
