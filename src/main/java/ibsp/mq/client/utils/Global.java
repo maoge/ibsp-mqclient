@@ -11,6 +11,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSONObject;
+
+import ibsp.common.events.EventSubscriber;
 import ibsp.common.utils.BasicOperation;
 import ibsp.common.utils.CONSTS;
 import ibsp.common.utils.IBSPConfig;
@@ -24,7 +27,7 @@ import ibsp.mq.client.event.EventSockListener;
 import ibsp.mq.client.exception.ZKLockException;
 import ibsp.mq.client.router.Router;
 
-public class Global {
+public class Global implements EventSubscriber {
 	
 	private static Logger logger = LoggerFactory.getLogger(Global.class);
 
@@ -373,6 +376,12 @@ public class Global {
 	
 	public void setLsnrPort(int port) {
 		this.lsnrPort = port;
+	}
+	
+	@Override
+	public void postEvent(JSONObject arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	private class TimerEventRunner implements Runnable {
