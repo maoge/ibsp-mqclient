@@ -4,6 +4,7 @@ import ibsp.common.utils.CONSTS;
 import ibsp.common.utils.IBSPConfig;
 import ibsp.common.utils.SRandomGenerator;
 import ibsp.common.utils.StringUtils;
+import ibsp.mq.client.config.MetasvrConfigFactory;
 import ibsp.mq.client.router.Router;
 import ibsp.mq.client.utils.Global;
 
@@ -26,6 +27,10 @@ public class MQClientImpl implements IMQClient {
 
 	public MQClientImpl() {
 		clientID = SRandomGenerator.genUUID();
+		
+		String rootUrls = IBSPConfig.getInstance().getMetasvrUrl();
+		MetasvrConfigFactory.getInstance(rootUrls);
+		
 		Global.get().registerClient(this);
 	}
 

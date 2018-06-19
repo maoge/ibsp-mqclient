@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import ibsp.common.events.EventController;
 import ibsp.common.events.EventType;
 import ibsp.common.utils.BasicOperation;
 import ibsp.common.utils.CONSTS;
@@ -1437,10 +1438,11 @@ public class Router {
 		// "[]" not report
 		if (reportStrBuilder.length() > 2) {
 			String context = reportStrBuilder.toString();
-			Global global = Global.get();
-			String lsnrAddr = String.format("%s:%d", global.getLsnrIP(), global.getLsnrPort());
-			int res = BasicOperation.putClientStatisticInfo(context, lsnrAddr);
-			if (res != CONSTS.REVOKE_OK) {
+			String lsnrAddr = EventController.getInstance().getLsnrAddr();
+			if (StringUtils.isNullOrEmtpy(lsnrAddr))
+				return;
+			
+			if (BasicOperation.putClientStatisticInfo(context, lsnrAddr, CONSTS.TYPE_MQ_CLIENT) != CONSTS.REVOKE_OK) {
 				logger.error("client statistic info send to mcenter error.");
 			} else {
 				logger.debug("client statistic info send to mcenter ok.");

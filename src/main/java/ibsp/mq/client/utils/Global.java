@@ -4,53 +4,31 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alibaba.fastjson.JSONObject;
-
-import ibsp.common.events.EventSubscriber;
-import ibsp.common.utils.BasicOperation;
+import ibsp.common.events.EventController;
 import ibsp.common.utils.CONSTS;
 import ibsp.common.utils.IBSPConfig;
-import ibsp.common.utils.IVarObject;
-import ibsp.common.utils.MetasvrUrlConfig;
 import ibsp.common.utils.SVarObject;
-import ibsp.common.utils.StringUtils;
 import ibsp.mq.client.api.MQClientImpl;
 import ibsp.mq.client.event.EventMsg;
-import ibsp.mq.client.event.EventSockListener;
 import ibsp.mq.client.exception.ZKLockException;
 import ibsp.mq.client.router.Router;
 
-public class Global implements EventSubscriber {
+public class Global {
 	
 	private static Logger logger = LoggerFactory.getLogger(Global.class);
 
 	private SVarObject globalErrObj;
 	private int qos;
 	
-	private volatile boolean isLsnrInited;          // 本机监听是否完成初始化
-	private String lsnrIP;                          // 本机和管理平台交互的ip
-	private int    lsnrPort;                        // 本机用于接收管理平台下发事件的端口
-	private EventSockListener evSockLsnr;           // 管理平台下发事件接收
-	
-	private AtomicInteger eventCntInQueue;
-	private ConcurrentLinkedQueue<EventMsg> eventQueue;
-	
-	private volatile boolean isTimerRunnerInited;
-	private Thread timerEventThread;                // 合并统计TPS、统计上报、EventDisptcher到一个线程处理
-	private TimerEventRunner timerEventRunner;
-	
 	private Router currAllocRouter = null;          // 当前待复用的router
 	private Map<String, Router> routerMap = null;   // 所有已分配的Router
 	
 	private ZKLocker zklocker = null;
-	
 	private ReentrantLock lock = null;
 	
 	private static Global theInstance = null;
@@ -65,14 +43,7 @@ public class Global implements EventSubscriber {
 		
 		qos          = IBSPConfig.getInstance().getMqPrefetchSize();
 		globalErrObj = new SVarObject();
-		
 		routerMap    = new ConcurrentHashMap<String, Router>();
-		isLsnrInited = false;
-		
-		eventCntInQueue = new AtomicInteger(0);
-		eventQueue      = new ConcurrentLinkedQueue<EventMsg>();
-		
-		lsnrPort = CONSTS.LSNR_INVALID_PORT;
 	}
 
 	public static Global get() {
@@ -82,9 +53,6 @@ public class Global implements EventSubscriber {
 				return theInstance;
 			} else {
 				theInstance = new Global();
-				theInstance.initRootUrl();
-				theInstance.initListener();
-				theInstance.initTimerEventRunner();
 				theInstance.initZKLocker();
 			}
 		} finally {
@@ -98,53 +66,13 @@ public class Global implements EventSubscriber {
 		try {
 			lock.lock();
 			if (routerMap.size() == 0) {
-				if (isTimerRunnerInited) {
-					timerEventRunner.stopRunning();
-					timerEventThread.join();
-					timerEventRunner = null;
-					timerEventThread = null;
-					isTimerRunnerInited = false;
-				}
-				
-				if (isLsnrInited) {
-					if (evSockLsnr != null && evSockLsnr.IsStart()) {
-						evSockLsnr.stop();
-						evSockLsnr = null;
-						isLsnrInited = false;
-					}
-				}
+				EventController.getInstance().unsubscribe(CONSTS.TYPE_MQ_CLIENT);
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		} finally {
 			lock.unlock();
 		}
-	}
-	
-	public boolean pushEventMsg(EventMsg event) {
-		if (event == null)
-			return false;
-		
-		boolean ret = eventQueue.offer(event);
-		if (ret) {
-			eventCntInQueue.incrementAndGet();
-		} else {
-			logger.error("event push fail.");
-		}
-		
-		return ret;
-	}
-	
-	public EventMsg popEventMsg() {
-		if (eventCntInQueue.get() == 0)
-			return null;
-		
-		EventMsg event = eventQueue.poll();
-		if (event != null) {
-			eventCntInQueue.decrementAndGet();
-		}
-		
-		return event;
 	}
 	
 	public void registerClient(MQClientImpl client) {
@@ -182,118 +110,10 @@ public class Global implements EventSubscriber {
 		}
 	}
 	
-	private void initTimerEventRunner() {
-		try {
-			lock.lock();
-			if (isTimerRunnerInited)
-				return;
-			
-			if (timerEventRunner == null)
-				timerEventRunner = new TimerEventRunner();
-			
-			timerEventThread = new Thread(timerEventRunner);
-			timerEventThread.setDaemon(true);
-			timerEventThread.setName("Router.TimerEventThread");
-			timerEventThread.start();
-			
-			isTimerRunnerInited = true;
-		} finally {
-			lock.unlock();
-		}
-	}
-	
-	private void initListener() {
-		if (IBSPConfig.getInstance().MqIsDebug())
-			return;
-		
-		initLsnrIP();
-		if (lsnrIP == null) {
-			logger.error("init event listener error:lsnrIP is null!");
-			return;
-		}
-		
-		for (int i = 0; i < CONSTS.BATCH_FIND_CNT; i++) {
-			try {
-				lock.lock();
-				if (isLsnrInited)
-					break;
-				
-				initLsnrPort();
-				if (lsnrPort == CONSTS.LSNR_INVALID_PORT) {
-					logger.error("init event listener error:lsnrPort illigal!");
-					continue;
-				}
-				
-				if (evSockLsnr == null) {
-					evSockLsnr = new EventSockListener(lsnrIP, lsnrPort);
-					evSockLsnr.start();
-					isLsnrInited = true;
-					
-					logger.info("event listener start ok, with addr {}:{}", lsnrIP, lsnrPort);
-					break;
-				}
-			} catch (Exception e) {
-				logger.error("Event Socket listener start error:{}, port:{} is used, retry another port.", e.getMessage(), lsnrPort);
-				
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e1) {
-				}
-			} finally {
-				lock.unlock();
-			}
-		}
-	}
-	
 	private void initZKLocker() {
 		if (IBSPConfig.getInstance().MqIsMqZKLockerSupport()) {
 			zklocker = new ZKLocker();
 			zklocker.init();
-		}
-	}
-	
-	private void initLsnrIP() {
-		SVarObject sVarIP = new SVarObject();
-
-		int cnt = 0;
-		boolean ok = false;
-		while (cnt < CONSTS.GET_IP_RETRY) {
-			int ret = BasicOperation.getLocalIP(sVarIP);
-			if (ret == CONSTS.REVOKE_OK) {
-				lsnrIP = sVarIP.getVal();
-				ok = true;
-				break;
-			} else {
-				try {
-					Thread.sleep(CONSTS.GET_IP_RETRY_INTERVAL);
-				} catch (InterruptedException e) {
-					logger.error(e.getMessage(), e);
-				}
-			}
-		}
-
-		if (!ok) {
-			logger.error("BasicOperation.getLocalIP error, localIP use 0.0.0.0");
-			lsnrIP = null;
-		}
-	}
-	
-	private void initLsnrPort() {
-		IVarObject iVarPort = new IVarObject();
-
-		int ret = BasicOperation.getUsablePort(lsnrIP, iVarPort);
-		if (ret == CONSTS.REVOKE_OK) {
-			lsnrPort = iVarPort.getVal();
-		} else {
-			logger.error("BasicOperation.getUsablePort error, lsnrPort not initalized.");
-			lsnrPort = CONSTS.LSNR_INVALID_PORT;
-		}	
-	}
-
-	private void initRootUrl() {
-		String rootUrls = IBSPConfig.getInstance().getMetasvrUrl();
-		if (!StringUtils.isNullOrEmtpy(rootUrls)) {
-			MetasvrUrlConfig.init(rootUrls);
 		}
 	}
 	
@@ -353,7 +173,7 @@ public class Global implements EventSubscriber {
 	public void setQos(int qos) {
 		this.qos = qos;
 	}
-	
+
 	public void setLastError(String err) {
 		globalErrObj.setVal(err);
 	}
@@ -361,116 +181,17 @@ public class Global implements EventSubscriber {
 	public String getLastError() {
 		return globalErrObj.getVal();
 	}
-	
-	public String getLsnrIP() {
-		return lsnrIP;
-	}
-	
-	public void setLsnrIP(String ip) {
-		this.lsnrIP = ip;
-	}
-	
-	public int getLsnrPort() {
-		return lsnrPort;
-	}
-	
-	public void setLsnrPort(int port) {
-		this.lsnrPort = port;
-	}
-	
-	@Override
-	public void postEvent(JSONObject arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	private class TimerEventRunner implements Runnable {
-		
-		private volatile boolean bRunning;
-		private long lastComputeTS;
-		private long lastReportTS;
-		private long currTS;
-		
-		public TimerEventRunner() {
-			currTS = System.currentTimeMillis();
-			lastComputeTS = currTS;
-			lastReportTS  = currTS;
-		}
-		
-		@Override
-		public void run() {
-			bRunning = true;
-			EventMsg event = null;
 
-			while (bRunning) {
-				try {
-					if ((event = popEventMsg()) != null) {
-						dispachEventMsg(event);
-					} else {
-						Thread.sleep(CONSTS.EVENT_DISPACH_INTERVAL);
-					}
-					
-					currTS = System.currentTimeMillis();
-					
-					if ((currTS - lastComputeTS) > CONSTS.STATISTIC_INTERVAL) {
-						doCompute();
-						lastComputeTS = currTS;
-					}
-					
-					if ((currTS - lastReportTS) > CONSTS.REPORT_INTERVAL) {
-						doReport();
-						lastReportTS = currTS;
-					}
-					
-//					for (Router router : routerMap.values()) {
-//						if (currTS - router.getLastWriteTime() > SysConfig.get().getMqWriteTimeout()) {
-//							try {
-//								VBroker vbroker = router.getCurrentVBroker();
-//								if (vbroker.forceClose()==CONSTS.REVOKE_OK) {
-//									logger.warn("RabbitMQ client write timeout, close send channel by force, VBrokerID: ", vbroker.getVBrokerId());
-//									router.setLastWriteTime(Long.MAX_VALUE);
-//								} else {
-//									logger.warn("RabbitMQ client write timeout, failed to close send channel...");
-//								}
-//							} catch (Exception e) {
-//								logger.warn("RabbitMQ client write timeout, failed to close send channel...", e);
-//							}
-//						}
-//					}
-				} catch(Exception e) {
-					logger.error(e.getMessage(), e);
-				}
-			}
-		}
-		
-		public void stopRunning() {
-			bRunning = false;
-		}
-		
-		private void dispachEventMsg(EventMsg event) {
-			Set<Entry<String, Router>> entrySet = routerMap.entrySet();
-			for (Entry<String, Router> entry : entrySet) {
-				Router router = entry.getValue();
-				router.dispachEventMsg(event);
-			}
-		}
-		
-		private void doCompute() {
-			Set<Entry<String, Router>> entrySet = routerMap.entrySet();
-			for (Entry<String, Router> entry : entrySet) {
-				Router router = entry.getValue();
-				router.doCompute();
-			}
-		}
-		
-		private void doReport() {
-			Set<Entry<String, Router>> entrySet = routerMap.entrySet();
-			for (Entry<String, Router> entry : entrySet) {
-				Router router = entry.getValue();
-				router.doReport();
-			}
-		}
+	public Map<String, Router> getRouterMap() {
+		return routerMap;
+	}
 
+	public void dispachEventMsg(EventMsg event) {
+		Set<Entry<String, Router>> entrySet = routerMap.entrySet();
+		for (Entry<String, Router> entry : entrySet) {
+			Router router = entry.getValue();
+			router.dispachEventMsg(event);
+		}
 	}
 
 }

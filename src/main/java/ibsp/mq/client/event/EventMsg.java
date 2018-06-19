@@ -100,6 +100,48 @@ public class EventMsg {
 	public void setJsonStr(String jsonStr) {
 		this.jsonStr = jsonStr;
 	}
+	
+	public static EventMsg fromJson(JSONObject json) {
+		if (json == null)
+			return null;
+		
+		int code = json.getInteger(CONSTS.EV_CODE);
+		String queueId = json.getString(CONSTS.EV_QUEUE_ID);
+		String queueName = json.getString(CONSTS.EV_QUEUE_NAME);
+		String groupId = json.getString(CONSTS.EV_GROUP_ID);
+		String brokerId = json.getString(CONSTS.EV_BROKER_ID);
+		String vbrokerId = json.getString(CONSTS.EV_VBROKER_ID);
+
+		if (code < EventType.e0.getValue()) {
+			logger.error("event:{} illegal.", json.toJSONString());
+			return null;
+		}
+
+		EventMsg event = new EventMsg();
+		event.setEventCode(code);
+
+		if (!StringUtils.isNullOrEmtpy(queueId)) {
+			event.setQueueId(queueId);
+		}
+
+		if (!StringUtils.isNullOrEmtpy(queueName)) {
+			event.setQueueName(queueName);
+		}
+
+		if (!StringUtils.isNullOrEmtpy(groupId)) {
+			event.setGroupId(groupId);
+		}
+
+		if (!StringUtils.isNullOrEmtpy(brokerId)) {
+			event.setBrokerId(brokerId);
+		}
+
+		if (!StringUtils.isNullOrEmtpy(vbrokerId)) {
+			event.setVBrokerId(vbrokerId);
+		}
+
+		return event;
+	}
 
 	public static EventMsg fronJson(String sEventInfo) {
 		JSONObject json = null;
