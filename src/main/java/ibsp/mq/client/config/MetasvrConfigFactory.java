@@ -42,7 +42,6 @@ public class MetasvrConfigFactory implements EventSubscriber {
 	}
 	
 	private MetasvrConfigFactory(String metasvrUrl) {
-		MetasvrUrlConfig.init(metasvrUrl);
 		EventController.getInstance().subscribe(CONSTS.TYPE_MQ_CLIENT, this);
 	}
 
