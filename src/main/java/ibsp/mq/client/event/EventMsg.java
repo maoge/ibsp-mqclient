@@ -106,11 +106,14 @@ public class EventMsg {
 			return null;
 		
 		int code = json.getInteger(CONSTS.EV_CODE);
-		String queueId = json.getString(CONSTS.EV_QUEUE_ID);
-		String queueName = json.getString(CONSTS.EV_QUEUE_NAME);
-		String groupId = json.getString(CONSTS.EV_GROUP_ID);
-		String brokerId = json.getString(CONSTS.EV_BROKER_ID);
-		String vbrokerId = json.getString(CONSTS.EV_VBROKER_ID);
+		String groupId = json.getString(CONSTS.EV_SERV_ID);
+
+		JSONObject jsonStr = json.getJSONObject(CONSTS.EV_JSON_STR);
+
+		String queueId = jsonStr.getString(CONSTS.EV_QUEUE_ID);
+		String queueName = jsonStr.getString(CONSTS.EV_QUEUE_NAME);
+		String brokerId = jsonStr.getString(CONSTS.EV_BROKER_ID);
+		String vbrokerId = jsonStr.getString(CONSTS.EV_VBROKER_ID);
 
 		if (code < EventType.e0.getValue()) {
 			logger.error("event:{} illegal.", json.toJSONString());
