@@ -961,11 +961,12 @@ public class VBrokerGroup {
 	
 	private boolean processErrVBroker(VBroker vbroker, int index, boolean isNeedSwitch) {
 
+
 		vbroker.softcut();
 		
 		//目前暂时不做自动切换，防止主从同时挂掉时将主节点切到错误的节点上
-		if (isNeedSwitch)
-			vbroker.doSwitch();
+		/*if (isNeedSwitch)
+			vbroker.doSwitch();*/
 		
 		boolean ret = false;
 		
@@ -1059,7 +1060,7 @@ public class VBrokerGroup {
 			lock.lock();
 			int idx = validNodes.indexOf(vbrokerId);
 			if (idx != -1) {
-				ret = processErrVBroker(vbroker, idx, false);   // 已经重置了最新的主节点id重连可以立即处理
+				ret = processErrVBroker(vbroker, idx, true);   // 已经重置了最新的主节点id重连可以立即处理
 			} else {
 				if (invalidNodes.contains(vbrokerId)) {
 					ret = reconnector.MoveMultiNodeVBroker(vbrokerId);

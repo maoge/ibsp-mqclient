@@ -1436,18 +1436,18 @@ public class Router {
 		reportStrBuilder.append(CONSTS.SBRACKET_RIGHT);
 
 		// "[]" not report
-		if (reportStrBuilder.length() > 2) {
-			String context = reportStrBuilder.toString();
-			String lsnrAddr = EventController.getInstance().getLsnrAddr();
-			if (StringUtils.isNullOrEmtpy(lsnrAddr))
-				return;
-			
-			if (BasicOperation.putClientStatisticInfo(context, lsnrAddr, CONSTS.TYPE_MQ_CLIENT) != CONSTS.REVOKE_OK) {
-				logger.error("client statistic info send to mcenter error.");
-			} else {
-				logger.debug("client statistic info send to mcenter ok.");
-			}
+
+		String context = reportStrBuilder.toString();
+		String lsnrAddr = EventController.getInstance().getLsnrAddr();
+		if (StringUtils.isNullOrEmtpy(lsnrAddr))
+			return;
+
+		if (BasicOperation.putClientStatisticInfo(context, lsnrAddr, CONSTS.TYPE_MQ_CLIENT) != CONSTS.REVOKE_OK) {
+			logger.error("client statistic info send to mcenter error.");
+		} else {
+			logger.debug("client statistic info send to mcenter ok.");
 		}
+
 	}
 	
 	public boolean dispachEventMsg(EventMsg event) {

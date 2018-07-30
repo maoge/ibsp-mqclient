@@ -149,7 +149,8 @@ public class VBrokerReconnector {
 
 		@Override
 		public void run() {
-			if (cnt == 0) {
+			int size = cnt + multiNodeVBList.size();
+			if (size == 0) {
 				vbGroup.shutdownReconncetor();
 				return;
 			}
