@@ -165,7 +165,7 @@ public class VBrokerReconnector {
 					if (vbroker.connect() == CONSTS.REVOKE_OK) {
 						HashMap<String, QueueDtlBean> queueDtlMap = new HashMap<String, QueueDtlBean>();
 						vbGroup.cloneQueueDtlMap(queueDtlMap, vbrokerId);
-						
+
 						if (vbroker.relistenAfterBroken(queueDtlMap) == CONSTS.REVOKE_OK) {
 							vbGroup.addToRepairedNodes(vbrokerId);
 							successVec.add(vbrokerId);

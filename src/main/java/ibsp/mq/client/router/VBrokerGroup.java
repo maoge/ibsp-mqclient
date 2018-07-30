@@ -690,7 +690,7 @@ public class VBrokerGroup {
 					repairedSize.addAndGet(-repSize);
 					
 					validSize.addAndGet(repSize);
-					invalidSize.addAndGet(-repSize);
+					/*invalidSize.addAndGet(-repSize);*/
 				} else {
 					logger.error("add repaired nodes error.");
 				}
@@ -1015,8 +1015,8 @@ public class VBrokerGroup {
 				
 				for (int i = 0; i < invalidSize.get(); i++) {
 					String invalidVBrokerId = invalidNodes.get(i);
-					if (invalidVBrokerId.equals(excludeVBrokerID))
-						continue;
+					/*if (invalidVBrokerId.equals(excludeVBrokerID))
+						continue;*/
 					
 					VBroker vbroker = vbrokerMap.get(invalidVBrokerId);
 					if (vbroker == null)
@@ -1029,8 +1029,8 @@ public class VBrokerGroup {
 			} finally {
 				lock.unlock();
 			}
-			
-			return;
+
+            return;
 		}
 		
 		try {
