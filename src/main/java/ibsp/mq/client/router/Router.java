@@ -1414,6 +1414,7 @@ public class Router {
 		reportStrBuilder.append(CONSTS.SBRACKET_LEFT);
 
 		int i = 0;
+		String servID = "";
 
 		Set<Entry<String, VBrokerGroup>> entrySet = groupMap.entrySet();
 		for (Entry<String, VBrokerGroup> entry : entrySet) {
@@ -1426,9 +1427,12 @@ public class Router {
 			if (StringUtils.isNullOrEmtpy(vbGrpRptInfo))
 				continue;
 
-			if (i > 0)
+			if (i > 0) {
 				reportStrBuilder.append(CONSTS.COMMA);
+				servID += CONSTS.COMMA;
+			}
 			reportStrBuilder.append(vbGrpRptInfo);
+			servID += vbGroup.getGroupId();
 
 			i++;
 		}
@@ -1442,7 +1446,7 @@ public class Router {
 		if (StringUtils.isNullOrEmtpy(lsnrAddr))
 			return;
 
-		if (BasicOperation.putClientStatisticInfo(context, lsnrAddr, CONSTS.TYPE_MQ_CLIENT) != CONSTS.REVOKE_OK) {
+		if (BasicOperation.putClientStatisticInfo(context, lsnrAddr, CONSTS.TYPE_MQ_CLIENT, servID) != CONSTS.REVOKE_OK) {
 			logger.error("client statistic info send to mcenter error.");
 		} else {
 			logger.debug("client statistic info send to mcenter ok.");
