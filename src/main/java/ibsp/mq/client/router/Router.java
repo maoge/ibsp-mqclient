@@ -1424,8 +1424,8 @@ public class Router {
 			}
 
 			String vbGrpRptInfo = vbGroup.getStatisticInfo();
-			if (StringUtils.isNullOrEmtpy(vbGrpRptInfo))
-				continue;
+//			if (StringUtils.isNullOrEmtpy(vbGrpRptInfo))
+//				continue;
 
 			if (i > 0) {
 				reportStrBuilder.append(CONSTS.COMMA);
